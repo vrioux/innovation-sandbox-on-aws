@@ -94,6 +94,30 @@ export const NavHeader: FC<NavHeaderProps> = ({
                 iconName: locale === "fr" ? "check" : undefined,
                 iconSvg: locale !== "fr" ? spacerSvg : undefined,
               },
+              {
+                id: "language.es",
+                text: t("settings.language.es", "Español"),
+                iconName: locale === "es" ? "check" : undefined,
+                iconSvg: locale !== "es" ? spacerSvg : undefined,
+              },
+              {
+                id: "language.pt",
+                text: t("settings.language.pt", "Português"),
+                iconName: locale === "pt" ? "check" : undefined,
+                iconSvg: locale !== "pt" ? spacerSvg : undefined,
+              },
+              {
+                id: "language.it",
+                text: t("settings.language.it", "Italiano"),
+                iconName: locale === "it" ? "check" : undefined,
+                iconSvg: locale !== "it" ? spacerSvg : undefined,
+              },
+              {
+                id: "language.de",
+                text: t("settings.language.de", "Deutsch"),
+                iconName: locale === "de" ? "check" : undefined,
+                iconSvg: locale !== "de" ? spacerSvg : undefined,
+              },
             ],
           },
         ],
@@ -116,6 +140,18 @@ export const NavHeader: FC<NavHeaderProps> = ({
               break;
             case "language.fr":
               setLocale("fr");
+              break;
+            case "language.es":
+              setLocale("es");
+              break;
+            case "language.pt":
+              setLocale("pt");
+              break;
+            case "language.it":
+              setLocale("it");
+              break;
+            case "language.de":
+              setLocale("de");
               break;
             default:
               break;
