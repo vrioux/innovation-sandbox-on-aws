@@ -13,6 +13,7 @@ import {
 } from "@cloudscape-design/components";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { useIntl } from "react-intl";
 
 import { LeaseTemplate } from "@amzn/innovation-sandbox-commons/data/lease-template/lease-template";
 import { ErrorPanel } from "@amzn/innovation-sandbox-frontend/components/ErrorPanel";
@@ -56,6 +57,7 @@ const ExpiryCell = ({ item }: { item: LeaseTemplate }) => (
 );
 
 export const LeaseTemplatesTable = () => {
+  const intl = useIntl();
   // get lease templates using react query hook
   const {
     data: leaseTemplates,
@@ -103,7 +105,7 @@ export const LeaseTemplatesTable = () => {
     return (
       <ErrorPanel
         retry={refetch}
-        description="Could not load lease templates. Please try again."
+        description={intl.formatMessage({ id: "leaseTemplate.error.loading", defaultMessage: "Could not load lease templates. Please try again." })}
         error={getError as Error}
       />
     );
@@ -112,7 +114,7 @@ export const LeaseTemplatesTable = () => {
   return (
     <>
       <Table
-        header="Lease Templates"
+        header={intl.formatMessage({ id: "leaseTemplates.title", defaultMessage: "Lease Templates" })}
         stripedRows
         resizableColumns
         trackBy="uuid"
@@ -126,31 +128,31 @@ export const LeaseTemplatesTable = () => {
         columnDefinitions={[
           {
             id: "name",
-            header: "Name",
+            header: intl.formatMessage({ id: "leaseTemplate.name", defaultMessage: "Name" }),
             sortingField: "name",
-            cell: (item: LeaseTemplate) => <NameCell item={item} />, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+            cell: (item: LeaseTemplate) => <NameCell item={item} />,
           },
           {
             id: "createdBy",
-            header: "Created by",
+            header: intl.formatMessage({ id: "leaseTemplate.createdBy", defaultMessage: "Created by" }),
             sortingField: "createdBy",
             cell: (item: LeaseTemplate) => item.createdBy,
           },
           {
             id: "maxSpend",
-            header: "Max Budget",
+            header: intl.formatMessage({ id: "leaseTemplate.maxBudget", defaultMessage: "Max Budget" }),
             sortingField: "maxSpend",
-            cell: (item: LeaseTemplate) => <MaxSpendCell item={item} />, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+            cell: (item: LeaseTemplate) => <MaxSpendCell item={item} />,
           },
           {
             id: "leaseDurationInHours",
-            header: "Expiry",
+            header: intl.formatMessage({ id: "leaseTemplate.expiry", defaultMessage: "Expiry" }),
             sortingField: "leaseDurationInHours",
-            cell: (item: LeaseTemplate) => <ExpiryCell item={item} />, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+            cell: (item: LeaseTemplate) => <ExpiryCell item={item} />,
           },
           {
             id: "meta.lastEditTime",
-            header: "Last Updated",
+            header: intl.formatMessage({ id: "leaseTemplate.lastUpdated", defaultMessage: "Last Updated" }),
             sortingField: "meta.lastEditTime",
             cell: (item: LeaseTemplate) =>
               moment(item.meta?.lastEditTime).fromNow(),
@@ -166,14 +168,14 @@ export const LeaseTemplatesTable = () => {
             />
             <ButtonDropdown
               disabled={selectedItems.length === 0}
-              items={[{ text: "Delete", id: "delete" }]}
+              items={[{ text: intl.formatMessage({ id: "common.delete", defaultMessage: "Delete" }), id: "delete" }]}
               onItemClick={({ detail }) => {
                 if (detail.id === "delete") {
                   setDeleteModalVisible(true);
                 }
               }}
             >
-              Actions
+              {intl.formatMessage({ id: "leaseTemplate.actions", defaultMessage: "Actions" })}
             </ButtonDropdown>
           </SpaceBetween>
         }
@@ -182,18 +184,18 @@ export const LeaseTemplatesTable = () => {
       <DeleteConfirmationDialog
         variant="confirmation"
         visible={isDeleteModalVisible}
-        title="Remove lease templates"
+        title={intl.formatMessage({ id: "leaseTemplate.delete.title", defaultMessage: "Remove lease templates" })}
         onCancelClicked={() => setDeleteModalVisible(false)}
         onDeleteClicked={handleDelete}
         loading={isDeleting}
       >
         <TextContent>
-          Are you sure you want to remove these lease template(s)?
+          {intl.formatMessage({ id: "leaseTemplate.delete.confirmation", defaultMessage: "Are you sure you want to remove these lease template(s)?" })}
         </TextContent>
 
         {showDeleteError && (
           <ErrorPanel
-            description="An error occurred. Please try again."
+            description={intl.formatMessage({ id: "common.error.generic", defaultMessage: "An error occurred. Please try again." })}
             error={deleteError as Error}
           />
         )}

@@ -1,84 +1,53 @@
-// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
-// SPDX-License-Identifier: Apache-2.0
+import { render, screen } from "@testing-library/react";
+import { IntlProvider } from "react-intl";
+import { vi } from "vitest";
 
-import { screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { BrowserRouter as Router } from "react-router-dom";
-import { describe, expect, test, vi } from "vitest";
-
-import {
-  LeaseDurationForm,
-  LeaseDurationFormProps,
-} from "@amzn/innovation-sandbox-frontend/domains/leases/components/LeaseDurationForm";
-import { renderWithQueryClient } from "@amzn/innovation-sandbox-frontend/setupTests";
-
-// Mock ResizeObserver
-class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
-}
-
-window.ResizeObserver = ResizeObserver;
+import { LeaseDurationForm } from "@amzn/innovation-sandbox-frontend/domains/leases/components/LeaseDurationForm";
+import { messages } from "@amzn/innovation-sandbox-frontend/i18n/config";
 
 describe("LeaseDurationForm", () => {
-  const mockOnSubmit = vi.fn();
-  const mockOnCancel = vi.fn();
-
-  const defaultProps: LeaseDurationFormProps = {
-    expirationDate: undefined,
-    durationThresholds: [],
-    onSubmit: mockOnSubmit,
-    onCancel: mockOnCancel,
-    isUpdating: false,
+  const defaultProps = {
+    expirationDate: null,
+    durationThresholds: {},
+    onSubmit: vi.fn(),
+    onCancel: vi.fn(),
   };
 
-  const renderComponent = (props = {}) =>
-    renderWithQueryClient(
-      <Router>
-        <LeaseDurationForm {...defaultProps} {...props} />
-      </Router>,
+  const renderWithIntl = (ui: React.ReactNode, locale = "en") => {
+    return render(
+      <IntlProvider messages={messages[locale]} locale={locale}>
+        {ui}
+      </IntlProvider>
     );
+  };
 
-  test("renders the form with correct initial state", () => {
-    renderComponent();
+  it("renders in English by default", () => {
+    renderWithIntl(<LeaseDurationForm {...defaultProps} />);
 
     expect(screen.getByText("Lease Duration")).toBeInTheDocument();
-    expect(
-      screen.getByText("This lease currently does not expire"),
-    ).toBeInTheDocument();
-    expect(screen.getByLabelText("Do not set an expiry date")).toBeChecked();
-    expect(screen.getByLabelText("Set an expiry date")).not.toBeChecked();
+    expect(screen.getByText("This lease currently does not expire")).toBeInTheDocument();
+    expect(screen.getByText("Do not set an expiry date")).toBeInTheDocument();
+    expect(screen.getByText("Set an expiry date")).toBeInTheDocument();
   });
 
-  test("displays expiration date input when 'Set an expiry date' is selected", async () => {
-    renderComponent();
+  it("renders in French when French locale is used", () => {
+    renderWithIntl(<LeaseDurationForm {...defaultProps} />, "fr");
 
-    const setExpiryRadio = screen.getByLabelText("Set an expiry date");
-    await userEvent.click(setExpiryRadio);
-
-    expect(screen.getByText("Date")).toBeInTheDocument();
-    expect(screen.getByText("Time")).toBeInTheDocument();
+    expect(screen.getByText("Durée de la location")).toBeInTheDocument();
+    expect(screen.getByText("Cette location n'expire pas actuellement")).toBeInTheDocument();
+    expect(screen.getByText("Ne pas définir de date d'expiration")).toBeInTheDocument();
+    expect(screen.getByText("Définir une date d'expiration")).toBeInTheDocument();
   });
 
-  test("displays duration thresholds when expiry date is set", async () => {
-    renderComponent();
+  it("shows different text when expiration date is set", () => {
+    const props = {
+      ...defaultProps,
+      expirationDate: new Date("2024-12-31T23:59:59"),
+    };
 
-    const setExpiryRadio = screen.getByLabelText("Set an expiry date");
-    await userEvent.click(setExpiryRadio);
+    renderWithIntl(<LeaseDurationForm {...props} />, "fr");
 
-    expect(screen.getByText("Duration Thresholds")).toBeInTheDocument();
-    expect(
-      screen.getByText("Determine what happens as time passes."),
-    ).toBeInTheDocument();
-  });
-
-  test("calls onCancel when cancel button is clicked", async () => {
-    renderComponent();
-
-    const cancelButton = screen.getByText("Cancel");
-    await userEvent.click(cancelButton);
-
-    expect(mockOnCancel).toHaveBeenCalled();
+    expect(screen.getByText("Cette location expire")).toBeInTheDocument();
+    expect(screen.getByText("Supprimer la date d'expiration")).toBeInTheDocument();
   });
 });

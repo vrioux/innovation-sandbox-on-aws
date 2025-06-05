@@ -19,6 +19,7 @@ import {
 } from "@cloudscape-design/components";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useIntl } from "react-intl";
 
 import {
   ApprovalDeniedLeaseStatusSchema,
@@ -57,34 +58,38 @@ import { useBreadcrumb } from "@amzn/innovation-sandbox-frontend/hooks/useBreadc
 import { useModal } from "@amzn/innovation-sandbox-frontend/hooks/useModal";
 import { useAppLayoutContext } from "@aws-northstar/ui/components/AppLayout";
 
-const filterOptions: SelectProps.Options = [
-  {
-    label: "Active",
-    options: MonitoredLeaseStatusSchema.options.map((status) => ({
-      label: getLeaseStatusDisplayName(status as LeaseStatus),
-      value: status,
-    })),
-  },
-  {
-    label: "Pending",
-    options: [
-      {
-        label: getLeaseStatusDisplayName(PendingLeaseStatusSchema.value),
-        value: PendingLeaseStatusSchema.value,
-      },
-    ],
-  },
-  {
-    label: "Expired",
-    options: [
-      ...ExpiredLeaseStatusSchema.options,
-      ApprovalDeniedLeaseStatusSchema.value,
-    ].map((status) => ({
-      label: getLeaseStatusDisplayName(status as LeaseStatus),
-      value: status,
-    })),
-  },
-];
+const useFilterOptions = () => {
+  const intl = useIntl();
+  const filterOptions: SelectProps.Options = [
+    {
+      label: intl.formatMessage({ id: "status.active", defaultMessage: "Active" }),
+      options: MonitoredLeaseStatusSchema.options.map((status) => ({
+        label: intl.formatMessage({ id: `status.${status.toLowerCase()}`, defaultMessage: getLeaseStatusDisplayName(status as LeaseStatus) }),
+        value: status,
+      })),
+    },
+    {
+      label: intl.formatMessage({ id: "status.pending", defaultMessage: "Pending" }),
+      options: [
+        {
+          label: intl.formatMessage({ id: `status.${PendingLeaseStatusSchema.value.toLowerCase()}`, defaultMessage: getLeaseStatusDisplayName(PendingLeaseStatusSchema.value) }),
+          value: PendingLeaseStatusSchema.value,
+        },
+      ],
+    },
+    {
+      label: intl.formatMessage({ id: "status.expired", defaultMessage: "Expired" }),
+      options: [
+        ...ExpiredLeaseStatusSchema.options,
+        ApprovalDeniedLeaseStatusSchema.value,
+      ].map((status) => ({
+        label: intl.formatMessage({ id: `status.${status.toLowerCase()}`, defaultMessage: getLeaseStatusDisplayName(status as LeaseStatus) }),
+        value: status,
+      })),
+    },
+  ];
+  return filterOptions;
+};
 
 const UserCell = ({
   lease,
@@ -100,17 +105,19 @@ const UserCell = ({
   );
 
 const BudgetCell = ({ lease }: { lease: Lease }) => {
+  const intl = useIntl();
   return isMonitoredLease(lease) || isExpiredLease(lease) ? (
     <BudgetProgressBar
       currentValue={lease.totalCostAccrued}
       maxValue={lease.maxSpend}
     />
   ) : (
-    "No costs accrued"
+    intl.formatMessage({ id: "leases.noCosts", defaultMessage: "No costs accrued" })
   );
 };
 
 const ExpiryCell = ({ lease }: { lease: Lease }) => {
+  const intl = useIntl();
   if (isPendingLease(lease) || isApprovalDeniedLease(lease)) {
     return <DurationStatus durationInHours={lease.leaseDurationInHours} />;
   } else if (isMonitoredLease(lease)) {
@@ -120,7 +127,7 @@ const ExpiryCell = ({ lease }: { lease: Lease }) => {
         durationInHours={lease.leaseDurationInHours}
       />
     ) : (
-      <StatusIndicator type="info">No expiry</StatusIndicator>
+      <StatusIndicator type="info">{intl.formatMessage({ id: "leases.noExpiry", defaultMessage: "No expiry" })}</StatusIndicator>
     );
   } else if (isExpiredLease(lease)) {
     return <DurationStatus date={lease.endDate} expired={true} />;
@@ -128,12 +135,14 @@ const ExpiryCell = ({ lease }: { lease: Lease }) => {
   return null;
 };
 
-const AwsAccountCell = ({ lease }: { lease: Lease }) =>
-  isMonitoredLease(lease) || isExpiredLease(lease) ? (
+const AwsAccountCell = ({ lease }: { lease: Lease }) => {
+  const intl = useIntl();
+  return isMonitoredLease(lease) || isExpiredLease(lease) ? (
     lease.awsAccountId
   ) : (
-    <StatusIndicator type="warning">No account assigned</StatusIndicator>
+    <StatusIndicator type="warning">{intl.formatMessage({ id: "leases.noAccount", defaultMessage: "No account assigned" })}</StatusIndicator>
   );
+};
 
 const AccessCell = ({ lease }: { lease: Lease }) => (
   <>
@@ -149,50 +158,50 @@ type ActionModalContentProps = {
   onAction: (leaseId: string) => Promise<any>;
 };
 
-const createColumnDefinitions = (includeLinks: boolean) =>
+const createColumnDefinitions = (includeLinks: boolean, intl: any) =>
   [
     {
       id: "user",
-      header: "User",
+      header: intl.formatMessage({ id: "common.user", defaultMessage: "User" }),
       sortingField: "userEmail",
       cell: (lease: Lease) => (
         <UserCell lease={lease} includeLinks={includeLinks} />
-      ), // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+      ),
     },
     {
       id: "originalLeaseTemplateName",
-      header: "Lease Template",
+      header: intl.formatMessage({ id: "leaseTemplate.title", defaultMessage: "Lease Template" }),
       sortingField: "originalLeaseTemplateName",
       cell: (lease: Lease) => lease.originalLeaseTemplateName,
     },
     {
       id: "budget",
-      header: "Budget",
+      header: intl.formatMessage({ id: "common.budget", defaultMessage: "Budget" }),
       sortingField: "totalCostAccrued",
-      cell: (lease: Lease) => <BudgetCell lease={lease} />, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+      cell: (lease: Lease) => <BudgetCell lease={lease} />,
     },
     {
       id: "expirationDate",
-      header: "Expiry",
+      header: intl.formatMessage({ id: "leaseTemplate.expiry", defaultMessage: "Expiry" }),
       sortingField: "expirationDate",
-      cell: (lease: Lease) => <ExpiryCell lease={lease} />, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+      cell: (lease: Lease) => <ExpiryCell lease={lease} />,
     },
     {
       id: "status",
-      header: "Status",
+      header: intl.formatMessage({ id: "common.status", defaultMessage: "Status" }),
       sortingComparator: leaseStatusSortingComparator,
-      cell: (lease: Lease) => <LeaseStatusBadge lease={lease} />, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+      cell: (lease: Lease) => <LeaseStatusBadge lease={lease} />,
     },
     {
       id: "awsAccountId",
-      header: "AWS Account",
+      header: intl.formatMessage({ id: "common.account", defaultMessage: "AWS Account" }),
       sortingField: "awsAccountId",
-      cell: (lease: Lease) => <AwsAccountCell lease={lease} />, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+      cell: (lease: Lease) => <AwsAccountCell lease={lease} />,
     },
     {
       id: "link",
-      header: "Access",
-      cell: (lease: Lease) => <AccessCell lease={lease} />, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+      header: intl.formatMessage({ id: "common.access", defaultMessage: "Access" }),
+      cell: (lease: Lease) => <AccessCell lease={lease} />,
     },
   ].filter((column) => includeLinks || column.id !== "link");
 
@@ -201,24 +210,37 @@ const ActionModalContent = ({
   action,
   onAction,
 }: ActionModalContentProps) => {
+  const intl = useIntl();
   return (
     <BatchActionReview
       items={selectedLeases}
-      description={`${selectedLeases.length} lease(s) to ${action}`}
-      columnDefinitions={createColumnDefinitions(false)}
+      description={intl.formatMessage(
+        { id: `leases.${action}.description`, defaultMessage: "{count} lease(s) to {action}" },
+        { count: selectedLeases.length, action }
+      )}
+      columnDefinitions={createColumnDefinitions(false, intl)}
       identifierKey="leaseId"
       onSubmit={async (lease: Lease) => {
         await onAction(lease.leaseId);
       }}
       onSuccess={() => {
         showSuccessToast(
-          `Leases(s) were ${action === "terminate" ? "terminated" : "frozen"} successfully.`,
+          intl.formatMessage(
+            { id: `leases.${action}.success`, defaultMessage: "Leases(s) were {action}d successfully." },
+            { action }
+          )
         );
       }}
       onError={() =>
         showErrorToast(
-          `One or more leases failed to ${action}, try resubmitting.`,
-          `Failed to ${action} lease(s)`,
+          intl.formatMessage(
+            { id: `leases.${action}.error`, defaultMessage: "One or more leases failed to {action}, try resubmitting." },
+            { action }
+          ),
+          intl.formatMessage(
+            { id: `leases.${action}.error.title`, defaultMessage: "Failed to {action} lease(s)" },
+            { action }
+          )
         )
       }
     />
@@ -229,6 +251,8 @@ export const ListLeases = () => {
   const navigate = useNavigate();
   const { setTools } = useAppLayoutContext();
   const setBreadcrumb = useBreadcrumb();
+  const intl = useIntl();
+  const filterOptions = useFilterOptions();
   const [filteredLeases, setFilteredLeases] = useState<Lease[]>([]);
   const [selectedLeases, setSelectedLeases] = useState<Lease[]>([]);
   const [leaseTemplates, setLeaseTemplates] = useState<SelectProps.Options>([]);
@@ -249,8 +273,8 @@ export const ListLeases = () => {
 
   const init = async () => {
     setBreadcrumb([
-      { text: "Home", href: "/" },
-      { text: "Leases", href: "/leases" },
+      { text: intl.formatMessage({ id: "common.home", defaultMessage: "Home" }), href: "/" },
+      { text: intl.formatMessage({ id: "leases.title", defaultMessage: "Leases" }), href: "/leases" },
     ]);
     setTools(<Markdown file="leases" />);
   };
@@ -310,7 +334,7 @@ export const ListLeases = () => {
 
   const showTerminateModal = () => {
     showModal({
-      header: "Terminate Lease(s)",
+      header: intl.formatMessage({ id: "leases.terminate.title", defaultMessage: "Terminate Lease(s)" }),
       content: (
         <ActionModalContent
           selectedLeases={selectedLeases}
@@ -324,7 +348,7 @@ export const ListLeases = () => {
 
   const showFreezeModal = () => {
     showModal({
-      header: "Freeze Lease(s)",
+      header: intl.formatMessage({ id: "leases.freeze.title", defaultMessage: "Freeze Lease(s)" }),
       content: (
         <ActionModalContent
           selectedLeases={selectedLeases}
@@ -342,17 +366,17 @@ export const ListLeases = () => {
         <Header
           variant="h1"
           info={<InfoLink markdown="leases" />}
-          description="Manage sandbox account leases"
+          description={intl.formatMessage({ id: "leases.description", defaultMessage: "Manage sandbox account leases" })}
         >
-          Leases
+          {intl.formatMessage({ id: "leases.title", defaultMessage: "Leases" })}
         </Header>
       }
     >
       <SpaceBetween size="s">
-        <Container header={<Header variant="h3">Filter Options</Header>}>
+        <Container header={<Header variant="h3">{intl.formatMessage({ id: "filter.options", defaultMessage: "Filter Options" })}</Header>}>
           <ColumnLayout columns={3}>
             <Box>
-              <FormField label="Status" />
+              <FormField label={intl.formatMessage({ id: "common.status", defaultMessage: "Status" })} />
               <Multiselect
                 data-testid="status-filter"
                 selectedOptions={statusFilter}
@@ -362,11 +386,11 @@ export const ListLeases = () => {
                   )
                 }
                 options={filterOptions}
-                placeholder="Choose options"
+                placeholder={intl.formatMessage({ id: "filter.chooseOptions", defaultMessage: "Choose options" })}
               />
             </Box>
             <Box>
-              <FormField label="Lease Template" />
+              <FormField label={intl.formatMessage({ id: "leaseTemplate.title", defaultMessage: "Lease Template" })} />
               <Multiselect
                 selectedOptions={leaseTemplateFilter}
                 onChange={({ detail }) =>
@@ -375,9 +399,9 @@ export const ListLeases = () => {
                   )
                 }
                 options={leaseTemplates}
-                placeholder="Choose options"
-                loadingText="Loading..."
-                empty="No leases found"
+                placeholder={intl.formatMessage({ id: "filter.chooseOptions", defaultMessage: "Choose options" })}
+                loadingText={intl.formatMessage({ id: "common.loading", defaultMessage: "Loading..." })}
+                empty={intl.formatMessage({ id: "leases.noLeases", defaultMessage: "No leases found" })}
                 statusType={isFetching ? "loading" : undefined}
               />
             </Box>
@@ -386,8 +410,8 @@ export const ListLeases = () => {
         <Table
           stripedRows
           trackBy="leaseId"
-          columnDefinitions={createColumnDefinitions(true)}
-          header="Leases"
+          columnDefinitions={createColumnDefinitions(true, intl)}
+          header={intl.formatMessage({ id: "leases.title", defaultMessage: "Leases" })}
           totalItemsCount={(filteredLeases || []).length}
           items={filteredLeases || []}
           selectedItems={selectedLeases}
@@ -397,7 +421,7 @@ export const ListLeases = () => {
             <SpaceBetween direction="horizontal" size="s">
               <Button
                 iconName="refresh"
-                ariaLabel="Refresh"
+                ariaLabel={intl.formatMessage({ id: "common.refresh", defaultMessage: "Refresh" })}
                 onClick={() => refetch()}
                 disabled={isFetching}
               />
@@ -405,29 +429,27 @@ export const ListLeases = () => {
                 disabled={selectedLeases.length === 0}
                 items={[
                   {
-                    text: "Terminate",
+                    text: intl.formatMessage({ id: "leases.actions.terminate", defaultMessage: "Terminate" }),
                     id: "terminate",
                     disabled: !selectedLeases.every(
                       (lease) =>
                         lease.status === "Active" || lease.status === "Frozen",
                     ),
-                    disabledReason:
-                      "Only active or frozen leases can be terminated.",
+                    disabledReason: intl.formatMessage({ id: "leases.actions.terminate.disabled", defaultMessage: "Only active or frozen leases can be terminated." }),
                   },
                   {
-                    text: "Freeze",
+                    text: intl.formatMessage({ id: "leases.actions.freeze", defaultMessage: "Freeze" }),
                     id: "freeze",
                     disabled: !selectedLeases.every(
                       (lease) => lease.status === "Active",
                     ),
-                    disabledReason: "Only active leases can be frozen.",
+                    disabledReason: intl.formatMessage({ id: "leases.actions.freeze.disabled", defaultMessage: "Only active leases can be frozen." }),
                   },
                   {
-                    text: "Update",
+                    text: intl.formatMessage({ id: "common.update", defaultMessage: "Update" }),
                     id: "update",
                     disabled: selectedLeases.length > 1,
-                    disabledReason:
-                      "Only a single lease can be updated at a time.",
+                    disabledReason: intl.formatMessage({ id: "leases.actions.update.disabled", defaultMessage: "Only a single lease can be updated at a time." }),
                   },
                 ]}
                 onItemClick={({ detail }) => {
@@ -444,7 +466,7 @@ export const ListLeases = () => {
                   }
                 }}
               >
-                Actions
+                {intl.formatMessage({ id: "common.actions", defaultMessage: "Actions" })}
               </ButtonDropdown>
             </SpaceBetween>
           }

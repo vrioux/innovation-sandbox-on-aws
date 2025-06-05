@@ -10,6 +10,7 @@ import {
 } from "@cloudscape-design/components";
 import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useIntl } from "react-intl";
 
 import { LeaseTemplate } from "@amzn/innovation-sandbox-commons/data/lease-template/lease-template";
 import { ErrorPanel } from "@amzn/innovation-sandbox-frontend/components/ErrorPanel";
@@ -35,6 +36,7 @@ export const UpdateLeaseTemplate = () => {
   const { uuid } = useParams();
   const navigate = useNavigate();
   const setBreadcrumb = useBreadcrumb();
+  const intl = useIntl();
 
   // get leaseTemplate hook
   const query = useGetLeaseTemplateById(uuid!);
@@ -131,20 +133,22 @@ export const UpdateLeaseTemplate = () => {
       }
     >
       <SpaceBetween size="m">
-        <Alert type="info" header="Please Note">
-          Making changes to this lease template will only affect new leases.
-          Existing leases using this lease template will not be affected.
+        <Alert 
+          type="info" 
+          header={intl.formatMessage({ id: "leaseTemplates.update.note" })}
+        >
+          {intl.formatMessage({ id: "leaseTemplates.update.noteContent" })}
         </Alert>
         <Tabs
           tabs={[
             {
               id: "basic",
-              label: "Basic Details",
+              label: intl.formatMessage({ id: "leaseTemplates.basicDetails" }),
               content: <BasicDetailsForm leaseTemplate={leaseTemplate} />,
             },
             {
               id: "budget",
-              label: "Budget",
+              label: intl.formatMessage({ id: "leaseTemplates.budget" }),
               content: (
                 <BudgetForm
                   maxSpend={leaseTemplate.maxSpend}
@@ -158,7 +162,7 @@ export const UpdateLeaseTemplate = () => {
             },
             {
               id: "duration",
-              label: "Duration",
+              label: intl.formatMessage({ id: "leaseTemplates.leaseDuration" }),
               content: (
                 <DurationForm
                   leaseDurationInHours={leaseTemplate.leaseDurationInHours}

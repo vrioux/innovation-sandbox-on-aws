@@ -6,6 +6,7 @@ import {
   KeyValuePairs,
   StatusIndicator,
 } from "@cloudscape-design/components";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { ErrorPanel } from "@amzn/innovation-sandbox-frontend/components/ErrorPanel";
 import { Loader } from "@amzn/innovation-sandbox-frontend/components/Loader";
@@ -20,6 +21,7 @@ export const GeneralSettings = () => {
     refetch,
     error,
   } = useGetConfigurations();
+  const intl = useIntl();
 
   if (isLoading) {
     return <Loader />;
@@ -28,7 +30,7 @@ export const GeneralSettings = () => {
   if (loadingError || !config) {
     return (
       <ErrorPanel
-        description="There was a problem loading settings."
+        description={intl.formatMessage({ id: "error.loadingSettings" })}
         retry={refetch}
         error={error as Error}
       />
@@ -40,19 +42,25 @@ export const GeneralSettings = () => {
       <KeyValuePairs
         items={[
           {
-            label: "Maintenance Mode",
+            label: <FormattedMessage id="settings.maintenanceMode" />,
             value: config.maintenanceMode ? (
               <StatusIndicator type="warning">
-                Maintenance mode is ON
+                <FormattedMessage 
+                  id="settings.maintenanceStatus" 
+                  values={{ status: "ON" }} 
+                />
               </StatusIndicator>
             ) : (
               <StatusIndicator type="success">
-                Maintenance mode is OFF
+                <FormattedMessage 
+                  id="settings.maintenanceStatus" 
+                  values={{ status: "OFF" }} 
+                />
               </StatusIndicator>
             ),
           },
           {
-            label: "Innovation Sandbox Managed Regions",
+            label: <FormattedMessage id="settings.regions" />,
             value:
               (config.isbManagedRegions || []).length > 0 ? (
                 <ul data-list>
@@ -61,11 +69,13 @@ export const GeneralSettings = () => {
                   ))}
                 </ul>
               ) : (
-                <StatusIndicator type="warning">Not set</StatusIndicator>
+                <StatusIndicator type="warning">
+                  <FormattedMessage id="common.notSet" />
+                </StatusIndicator>
               ),
           },
           {
-            label: "Terms of Service",
+            label: <FormattedMessage id="settings.termsOfService" />,
             value: (
               <Container>
                 <pre>{config.termsOfService}</pre>

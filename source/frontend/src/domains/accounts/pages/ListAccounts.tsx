@@ -14,6 +14,7 @@ import {
 import moment from "moment";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useIntl } from "react-intl";
 
 import {
   SandboxAccount,
@@ -72,45 +73,45 @@ const AccessCell = ({ account }: { account: SandboxAccount }) => (
   <AccountLoginLink accountId={account.awsAccountId} />
 );
 
-const createColumnDefinitions = (includeLinks: boolean) =>
+const createColumnDefinitions = (includeLinks: boolean, intl: ReturnType<typeof useIntl>) =>
   [
     {
       id: "awsAccountId",
-      header: "Account ID",
+      header: intl.formatMessage({ id: "accounts.table.accountId" }),
       sortingField: "awsAccountId",
       cell: (account: SandboxAccount) => account.awsAccountId,
     },
     {
       id: "status",
-      header: "Status",
+      header: intl.formatMessage({ id: "accounts.table.status" }),
       sortingComparator: accountStatusSortingComparator,
       cell: (account: SandboxAccount) => <StatusCell account={account} />,
     },
     {
       id: "createdOn",
-      header: "Added",
+      header: intl.formatMessage({ id: "accounts.table.added" }),
       sortingField: "createdOn",
       cell: (account: SandboxAccount) => <CreatedOnCell account={account} />,
     },
     {
       id: "lastModifiedOn",
-      header: "Last Modified",
+      header: intl.formatMessage({ id: "accounts.table.lastModified" }),
       sortingField: "lastModifiedOn",
       cell: (account: SandboxAccount) => <LastModifiedCell account={account} />,
     },
     {
       id: "name",
-      header: "Name",
+      header: intl.formatMessage({ id: "accounts.table.name" }),
       cell: (account: SandboxAccount) => account.name ?? "N/A",
     },
     {
       id: "email",
-      header: "Email",
+      header: intl.formatMessage({ id: "accounts.table.email" }),
       cell: (account: SandboxAccount) => account.email ?? "N/A",
     },
     {
       id: "link",
-      header: "Access",
+      header: intl.formatMessage({ id: "accounts.table.access" }),
       cell: (account: SandboxAccount) => <AccessCell account={account} />,
     },
   ].filter((column) => includeLinks || column.id !== "link");
@@ -125,29 +126,35 @@ const EjectModalContent = ({
   selectedAccounts,
   ejectAccount,
   navigate,
-}: EjectModalProps) => (
-  <BatchActionReview
-    items={selectedAccounts}
-    description={`${selectedAccounts.length} account(s) to eject`}
-    columnDefinitions={createColumnDefinitions(false)}
-    identifierKey="awsAccountId"
-    onSubmit={async (account: SandboxAccount) => {
-      await ejectAccount(account.awsAccountId);
-    }}
-    onSuccess={() => {
-      navigate("/accounts");
-      showSuccessToast(
-        "Account(s) were successfully ejected from the account pool.",
-      );
-    }}
-    onError={() =>
-      showErrorToast(
-        "One or more accounts failed to eject, try resubmitting.",
-        "Failed to eject account(s)",
-      )
-    }
-  />
-);
+}: EjectModalProps) => {
+  const intl = useIntl();
+  return (
+    <BatchActionReview
+      items={selectedAccounts}
+      description={intl.formatMessage(
+        { id: "accounts.modal.eject.description" },
+        { count: selectedAccounts.length }
+      )}
+      columnDefinitions={createColumnDefinitions(false, intl)}
+      identifierKey="awsAccountId"
+      onSubmit={async (account: SandboxAccount) => {
+        await ejectAccount(account.awsAccountId);
+      }}
+      onSuccess={() => {
+        navigate("/accounts");
+        showSuccessToast(
+          intl.formatMessage({ id: "accounts.modal.eject.success" })
+        );
+      }}
+      onError={() =>
+        showErrorToast(
+          intl.formatMessage({ id: "accounts.modal.eject.error" }),
+          intl.formatMessage({ id: "accounts.modal.eject.error.title" })
+        )
+      }
+    />
+  );
+};
 
 type CleanupModalProps = {
   selectedAccounts: SandboxAccount[];
@@ -159,33 +166,42 @@ const CleanupModalContent = ({
   selectedAccounts,
   cleanupAccount,
   navigate,
-}: CleanupModalProps) => (
-  <BatchActionReview
-    items={selectedAccounts}
-    description={`${selectedAccounts.length} account(s) to retry cleanup`}
-    columnDefinitions={createColumnDefinitions(false)}
-    identifierKey="awsAccountId"
-    onSubmit={async (account: SandboxAccount) => {
-      await cleanupAccount(account.awsAccountId);
-    }}
-    onSuccess={() => {
-      navigate("/accounts");
-      showSuccessToast("Account(s) were successfully sent to retry cleanup");
-    }}
-    onError={() =>
-      showErrorToast(
-        "One or more accounts failed to retry cleanup, try resubmitting.",
-        "Failed to retry cleanup on account(s)",
-      )
-    }
-  />
-);
+}: CleanupModalProps) => {
+  const intl = useIntl();
+  return (
+    <BatchActionReview
+      items={selectedAccounts}
+      description={intl.formatMessage(
+        { id: "accounts.modal.cleanup.description" },
+        { count: selectedAccounts.length }
+      )}
+      columnDefinitions={createColumnDefinitions(false, intl)}
+      identifierKey="awsAccountId"
+      onSubmit={async (account: SandboxAccount) => {
+        await cleanupAccount(account.awsAccountId);
+      }}
+      onSuccess={() => {
+        navigate("/accounts");
+        showSuccessToast(
+          intl.formatMessage({ id: "accounts.modal.cleanup.success" })
+        );
+      }}
+      onError={() =>
+        showErrorToast(
+          intl.formatMessage({ id: "accounts.modal.cleanup.error" }),
+          intl.formatMessage({ id: "accounts.modal.cleanup.error.title" })
+        )
+      }
+    />
+  );
+};
 
 export const ListAccounts = () => {
   // base ui hooks
   const navigate = useNavigate();
   const setBreadcrumb = useBreadcrumb();
   const { setTools } = useAppLayoutContext();
+  const intl = useIntl();
 
   // modal hook
   const { showModal } = useModal();
@@ -206,8 +222,8 @@ export const ListAccounts = () => {
 
   useInit(async () => {
     setBreadcrumb([
-      { text: "Home", href: "/" },
-      { text: "Accounts", href: "/accounts" },
+      { text: intl.formatMessage({ id: "common.home" }), href: "/" },
+      { text: intl.formatMessage({ id: "accounts.title" }), href: "/accounts" },
     ]);
     setTools(<Markdown file="accounts" />);
   });
@@ -226,7 +242,7 @@ export const ListAccounts = () => {
 
   const showEjectModal = () => {
     showModal({
-      header: "Eject Account(s)",
+      header: intl.formatMessage({ id: "accounts.modal.eject.title" }),
       content: (
         <EjectModalContent
           selectedAccounts={selectedAccounts}
@@ -240,7 +256,7 @@ export const ListAccounts = () => {
 
   const showCleanupModal = () => {
     showModal({
-      header: "Clean Up Account(s)",
+      header: intl.formatMessage({ id: "accounts.modal.cleanup.title" }),
       content: (
         <CleanupModalContent
           selectedAccounts={selectedAccounts}
@@ -264,12 +280,12 @@ export const ListAccounts = () => {
           variant="h1"
           actions={
             <Button onClick={onCreateClick} variant="primary">
-              Add accounts
+              {intl.formatMessage({ id: "accounts.addButton" })}
             </Button>
           }
-          description="Manage registered AWS accounts in the account pool"
+          description={intl.formatMessage({ id: "accounts.description" })}
         >
-          Accounts
+          {intl.formatMessage({ id: "accounts.title" })}
         </Header>
       }
     >
@@ -286,8 +302,8 @@ export const ListAccounts = () => {
             variant="embedded"
             stripedRows
             trackBy="awsAccountId"
-            columnDefinitions={createColumnDefinitions(true)}
-            header="Accounts"
+            columnDefinitions={createColumnDefinitions(true, intl)}
+            header={intl.formatMessage({ id: "accounts.table.header" })}
             items={filteredAccounts}
             selectedItems={selectedAccounts}
             onSelectionChange={handleSelectionChange}
@@ -303,9 +319,12 @@ export const ListAccounts = () => {
                 <ButtonDropdown
                   disabled={selectedAccounts.length === 0}
                   items={[
-                    { text: "Eject account", id: "eject" },
+                    { 
+                      text: intl.formatMessage({ id: "accounts.actions.eject" }), 
+                      id: "eject" 
+                    },
                     {
-                      text: "Retry cleanup",
+                      text: intl.formatMessage({ id: "accounts.actions.retryCleanup" }),
                       id: "retryCleanup",
                       disabled:
                         // disable cleanup option unless all selected accounts are in quarantine or cleanup
@@ -326,7 +345,7 @@ export const ListAccounts = () => {
                     }
                   }}
                 >
-                  Actions
+                  {intl.formatMessage({ id: "accounts.actions" })}
                 </ButtonDropdown>
               </SpaceBetween>
             }

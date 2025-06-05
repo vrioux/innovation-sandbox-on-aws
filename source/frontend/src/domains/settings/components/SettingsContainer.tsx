@@ -9,6 +9,7 @@ import {
   SpaceBetween,
 } from "@cloudscape-design/components";
 import { ReactNode } from "react";
+import { FormattedMessage } from "react-intl";
 
 interface SettingsContainerProps {
   children: ReactNode;
@@ -20,7 +21,7 @@ export const SettingsContainer = ({ children }: SettingsContainerProps) => {
       <Container>
         <SpaceBetween size="l">
           <Alert type="info">
-            To change these settings, please go to{" "}
+            <FormattedMessage id="settings.appConfigNote" />{" "}
             <Link
               external
               href="https://console.aws.amazon.com/systems-manager/appconfig/applications"

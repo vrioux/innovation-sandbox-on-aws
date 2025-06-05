@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { KeyValuePairs, StatusIndicator } from "@cloudscape-design/components";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { ErrorPanel } from "@amzn/innovation-sandbox-frontend/components/ErrorPanel";
 import { Loader } from "@amzn/innovation-sandbox-frontend/components/Loader";
@@ -16,6 +17,7 @@ export const CleanupSettings = () => {
     refetch,
     error,
   } = useGetConfigurations();
+  const intl = useIntl();
 
   if (isLoading) {
     return <Loader />;
@@ -24,7 +26,7 @@ export const CleanupSettings = () => {
   if (loadingError || !config) {
     return (
       <ErrorPanel
-        description="There was a problem loading settings."
+        description={intl.formatMessage({ id: "error.loadingSettings" })}
         retry={refetch}
         error={error as Error}
       />
@@ -37,38 +39,49 @@ export const CleanupSettings = () => {
         columns={2}
         items={[
           {
-            label: "Wait before Rerun Successful Attempt",
+            label: <FormattedMessage id="settings.cleanup.waitSuccess" />,
             value: config.cleanup.waitBeforeRerunSuccessfulAttemptSeconds ? (
-              <>
-                {config.cleanup.waitBeforeRerunSuccessfulAttemptSeconds} seconds
-              </>
+              <FormattedMessage 
+                id="settings.cleanup.waitSuccessValue" 
+                values={{ seconds: config.cleanup.waitBeforeRerunSuccessfulAttemptSeconds }} 
+              />
             ) : (
-              <StatusIndicator type="warning">Not set</StatusIndicator>
+              <StatusIndicator type="warning">
+                <FormattedMessage id="common.notSet" />
+              </StatusIndicator>
             ),
           },
-
           {
-            label: "Number of failed attempts to cancel cleanup",
+            label: <FormattedMessage id="settings.cleanup.failedAttempts" />,
             value: config.cleanup.numberOfFailedAttemptsToCancelCleanup ? (
               <>{config.cleanup.numberOfFailedAttemptsToCancelCleanup}</>
             ) : (
-              <StatusIndicator type="warning">Not set</StatusIndicator>
+              <StatusIndicator type="warning">
+                <FormattedMessage id="common.notSet" />
+              </StatusIndicator>
             ),
           },
           {
-            label: "Wait before retrying failed attempt",
+            label: <FormattedMessage id="settings.cleanup.waitFailed" />,
             value: config.cleanup.waitBeforeRetryFailedAttemptSeconds ? (
-              <>{config.cleanup.waitBeforeRetryFailedAttemptSeconds} seconds</>
+              <FormattedMessage 
+                id="settings.cleanup.waitFailedValue" 
+                values={{ seconds: config.cleanup.waitBeforeRetryFailedAttemptSeconds }} 
+              />
             ) : (
-              <StatusIndicator type="warning">Not set</StatusIndicator>
+              <StatusIndicator type="warning">
+                <FormattedMessage id="common.notSet" />
+              </StatusIndicator>
             ),
           },
           {
-            label: "Number of successful attempts to finish cleanup",
+            label: <FormattedMessage id="settings.cleanup.successAttempts" />,
             value: config.cleanup.numberOfSuccessfulAttemptsToFinishCleanup ? (
               <>{config.cleanup.numberOfSuccessfulAttemptsToFinishCleanup}</>
             ) : (
-              <StatusIndicator type="warning">Not set</StatusIndicator>
+              <StatusIndicator type="warning">
+                <FormattedMessage id="common.notSet" />
+              </StatusIndicator>
             ),
           },
         ]}

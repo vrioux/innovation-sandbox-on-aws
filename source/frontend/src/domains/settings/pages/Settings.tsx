@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ContentLayout, Header, Tabs } from "@cloudscape-design/components";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { InfoLink } from "@amzn/innovation-sandbox-frontend/components/InfoLink";
 import { Markdown } from "@amzn/innovation-sandbox-frontend/components/Markdown";
@@ -15,11 +16,12 @@ import { useAppLayoutContext } from "@aws-northstar/ui/components/AppLayout";
 export const Settings = () => {
   const setBreadcrumb = useBreadcrumb();
   const { setTools } = useAppLayoutContext();
+  const intl = useIntl();
 
   useInit(() => {
     setBreadcrumb([
-      { text: "Home", href: "/" },
-      { text: "Settings", href: "/settings" },
+      { text: intl.formatMessage({ id: "common.home" }), href: "/" },
+      { text: intl.formatMessage({ id: "settings.title" }), href: "/settings" },
     ]);
     setTools(<Markdown file="settings" />);
   });
@@ -30,26 +32,26 @@ export const Settings = () => {
         <Header
           variant="h1"
           info={<InfoLink markdown="settings" />}
-          description="Manage global settings here."
+          description={<FormattedMessage id="settings.description" />}
         >
-          Settings
+          <FormattedMessage id="settings.title" />
         </Header>
       }
     >
       <Tabs
         tabs={[
           {
-            label: "General Settings",
+            label: intl.formatMessage({ id: "settings.general" }),
             id: "general",
             content: <GeneralSettings />,
           },
           {
-            label: "Lease Settings",
+            label: intl.formatMessage({ id: "settings.lease" }),
             id: "lease",
             content: <LeaseSettings />,
           },
           {
-            label: "Clean Up Settings",
+            label: intl.formatMessage({ id: "settings.cleanup" }),
             id: "clean",
             content: <CleanupSettings />,
           },

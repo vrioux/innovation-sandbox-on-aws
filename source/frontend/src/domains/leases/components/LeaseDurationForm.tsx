@@ -12,6 +12,7 @@ import { DurationStatus } from "@amzn/innovation-sandbox-frontend/components/Dur
 import { Form } from "@amzn/innovation-sandbox-frontend/components/Form";
 import { ThresholdSettings } from "@amzn/innovation-sandbox-frontend/components/ThresholdSettings";
 import { thresholdValidator } from "@amzn/innovation-sandbox-frontend/components/ThresholdSettings/validator";
+import { useIntl } from "react-intl";
 
 export type LeaseDurationFormProps = {
   expirationDate: MonitoredLease["expirationDate"];
@@ -34,6 +35,8 @@ export const LeaseDurationForm = ({
   onCancel,
   isUpdating,
 }: LeaseDurationFormProps) => {
+  const intl = useIntl();
+
   return (
     <Form
       insideTab
@@ -61,12 +64,12 @@ export const LeaseDurationForm = ({
         }
       }}
       schema={{
-        submitLabel: "Update Duration Settings",
+        submitLabel: intl.formatMessage({ id: "leaseDuration.updateSettings" }),
         fields: [
           {
             component: componentTypes.SUB_FORM,
             name: "duration",
-            title: "Lease Duration",
+            title: intl.formatMessage({ id: "leaseDuration.title" }),
             fields: [
               {
                 component: componentTypes.PLAIN_TEXT,
@@ -75,11 +78,11 @@ export const LeaseDurationForm = ({
                   <Alert type="info">
                     {expirationDate ? (
                       <>
-                        This lease currently expires{" "}
+                        {intl.formatMessage({ id: "leaseDuration.currentlyExpires" })}{" "}
                         <DurationStatus date={expirationDate} />
                       </>
                     ) : (
-                      <>This lease currently does not expire</>
+                      <>{intl.formatMessage({ id: "leaseDuration.noExpiry" })}</>
                     )}
                   </Alert>
                 ),
@@ -87,23 +90,23 @@ export const LeaseDurationForm = ({
               {
                 component: componentTypes.RADIO,
                 name: "expiryDateEnabled",
-                label: <FormField label="Expiry Date" />,
+                label: <FormField label={intl.formatMessage({ id: "leaseDuration.expiryDate" })} />,
                 options: [
                   {
                     label: expirationDate
-                      ? "Remove expiry date"
-                      : "Do not set an expiry date",
+                      ? intl.formatMessage({ id: "leaseDuration.removeExpiry" })
+                      : intl.formatMessage({ id: "leaseDuration.noExpiry" }),
                     value: false,
                   },
                   {
-                    label: "Set an expiry date",
+                    label: intl.formatMessage({ id: "leaseDuration.setExpiry" }),
                     value: true,
                   },
                 ],
                 validate: [
                   {
                     type: validatorTypes.REQUIRED,
-                    message: "Please select an option",
+                    message: intl.formatMessage({ id: "leaseDuration.selectOption" }),
                   },
                 ],
               },
@@ -116,7 +119,7 @@ export const LeaseDurationForm = ({
                 validate: [
                   (date: Date) => {
                     if (!date) {
-                      return "Please enter a valid date and time";
+                      return intl.formatMessage({ id: "leaseDuration.enterValidDate" });
                     }
 
                     // Convert to moment object for easier comparison
@@ -125,7 +128,7 @@ export const LeaseDurationForm = ({
 
                     // Check if the date/time is at least 1 hour in the future
                     if (selectedDateTime.isBefore(oneHourFromNow)) {
-                      return "Please select a date and time at least 1 hour in the future";
+                      return intl.formatMessage({ id: "leaseDuration.futureDate" });
                     }
                   },
                 ],
@@ -153,8 +156,8 @@ export const LeaseDurationForm = ({
                 component: componentTypes.CUSTOM,
                 CustomComponent: ThresholdSettings,
                 name: "durationThresholds",
-                label: "Duration Thresholds",
-                description: "Determine what happens as time passes.",
+                label: intl.formatMessage({ id: "leaseDuration.thresholds" }),
+                description: intl.formatMessage({ id: "leaseDuration.thresholdsDescription" }),
                 thresholdType: "duration",
                 validate: [thresholdValidator("duration")],
                 showError: true,

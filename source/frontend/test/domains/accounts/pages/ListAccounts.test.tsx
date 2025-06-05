@@ -4,6 +4,7 @@
 import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
+import { IntlProvider } from "react-intl";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
 
@@ -18,6 +19,7 @@ import {
   ApiPaginatedResult,
   ApiResponse,
 } from "@amzn/innovation-sandbox-frontend/types";
+import { messages } from "@amzn/innovation-sandbox-frontend/i18n/config";
 
 // Mock ResizeObserver
 class ResizeObserver {
@@ -46,11 +48,13 @@ vi.mock("@amzn/innovation-sandbox-frontend/hooks/useBreadcrumb", () => ({
 describe("ListAccounts", () => {
   const renderComponent = () =>
     renderWithQueryClient(
-      <ModalProvider>
-        <Router>
-          <ListAccounts />
-        </Router>
-      </ModalProvider>,
+      <IntlProvider messages={messages.en} locale="en">
+        <ModalProvider>
+          <Router>
+            <ListAccounts />
+          </Router>
+        </ModalProvider>
+      </IntlProvider>,
     );
 
   test("renders the component with correct structure", async () => {
@@ -58,13 +62,13 @@ describe("ListAccounts", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("heading", { name: "Accounts", level: 1 }),
+        screen.getByRole("heading", { name: messages.en["accounts.title"], level: 1 }),
       ).toBeInTheDocument();
       expect(
-        screen.getByText("Manage registered AWS accounts in the account pool"),
+        screen.getByText(messages.en["accounts.description"]),
       ).toBeInTheDocument();
       expect(
-        screen.getByRole("button", { name: "Add accounts" }),
+        screen.getByRole("button", { name: messages.en["accounts.addButton"] }),
       ).toBeInTheDocument();
     });
 
@@ -80,7 +84,7 @@ describe("ListAccounts", () => {
     renderComponent();
     const user = userEvent.setup();
 
-    await user.click(screen.getByRole("button", { name: "Add accounts" }));
+    await user.click(screen.getByRole("button", { name: messages.en["accounts.addButton"] }));
 
     expect(mockNavigate).toHaveBeenCalledWith("/accounts/new");
   });
@@ -90,8 +94,8 @@ describe("ListAccounts", () => {
 
     await waitFor(() => {
       expect(mockSetBreadcrumb).toHaveBeenCalledWith([
-        { text: "Home", href: "/" },
-        { text: "Accounts", href: "/accounts" },
+        { text: messages.en["common.home"], href: "/" },
+        { text: messages.en["accounts.title"], href: "/accounts" },
       ]);
     });
   });
@@ -133,7 +137,7 @@ describe("ListAccounts", () => {
     const checkbox = screen.getAllByRole("checkbox")[1];
     await user.click(checkbox);
 
-    expect(screen.getByText("Actions")).not.toBeDisabled();
+    expect(screen.getByText(messages.en["accounts.actions"])).not.toBeDisabled();
   });
 
   test("refreshes account data when refresh button is clicked", async () => {
@@ -208,7 +212,7 @@ describe("ListAccounts", () => {
     const checkbox = screen.getAllByRole("checkbox")[1];
     userEvent.click(checkbox);
 
-    expect(screen.getByText("Actions")).not.toBeDisabled();
+    expect(screen.getByText(messages.en["accounts.actions"])).not.toBeDisabled();
   });
 
   test("opens eject modal when 'Eject account' is selected", async () => {
@@ -225,10 +229,10 @@ describe("ListAccounts", () => {
     const checkbox = within(row!).getByRole("checkbox");
     await user.click(checkbox);
 
-    const actionsButton = screen.getByText("Actions");
+    const actionsButton = screen.getByText(messages.en["accounts.actions"]);
     await user.click(actionsButton);
 
-    const ejectOption = await screen.findByText("Eject account");
+    const ejectOption = await screen.findByText(messages.en["accounts.actions.eject"]);
     await user.click(ejectOption);
 
     const modal = screen.getByRole("dialog");
@@ -264,10 +268,10 @@ describe("ListAccounts", () => {
       await user.click(checkbox);
     }
 
-    const actionsButton = screen.getByText("Actions");
+    const actionsButton = screen.getByText(messages.en["accounts.actions"]);
     await user.click(actionsButton);
 
-    const cleanupOption = await screen.findByText("Retry cleanup");
+    const cleanupOption = await screen.findByText(messages.en["accounts.actions.retryCleanup"]);
     await user.click(cleanupOption);
 
     // option should be disabled
@@ -293,10 +297,10 @@ describe("ListAccounts", () => {
       await user.click(checkbox);
     }
 
-    const actionsButton = screen.getByText("Actions");
+    const actionsButton = screen.getByText(messages.en["accounts.actions"]);
     await user.click(actionsButton);
 
-    const cleanupOption = await screen.findByText("Retry cleanup");
+    const cleanupOption = await screen.findByText(messages.en["accounts.actions.retryCleanup"]);
     await user.click(cleanupOption);
 
     const modal = screen.getByRole("dialog");

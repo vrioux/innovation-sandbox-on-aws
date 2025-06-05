@@ -3,6 +3,7 @@
 
 import { Button, ContentLayout, Header } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
+import { useIntl } from "react-intl";
 
 import { InfoLink } from "@amzn/innovation-sandbox-frontend/components/InfoLink";
 import { Markdown } from "@amzn/innovation-sandbox-frontend/components/Markdown";
@@ -15,12 +16,13 @@ export const ListLeaseTemplates = () => {
   const navigate = useNavigate();
   const setBreadcrumb = useBreadcrumb();
   const { setTools } = useAppLayoutContext();
+  const intl = useIntl();
 
   // set page breadcrumb on page init
   useInit(() => {
     setBreadcrumb([
-      { text: "Home", href: "/" },
-      { text: "Lease Templates", href: "/lease_templates" },
+      { text: intl.formatMessage({ id: "common.home", defaultMessage: "Home" }), href: "/" },
+      { text: intl.formatMessage({ id: "leaseTemplates.title", defaultMessage: "Lease Templates" }), href: "/lease_templates" },
     ]);
     setTools(<Markdown file="lease-templates" />);
   });
@@ -38,12 +40,12 @@ export const ListLeaseTemplates = () => {
           info={<InfoLink markdown="lease-templates" />}
           actions={
             <Button onClick={onCreateClick} variant="primary">
-              Add new lease template
+              {intl.formatMessage({ id: "leaseTemplates.addNew", defaultMessage: "Add new lease template" })}
             </Button>
           }
-          description="Manage the available templates to request leases from"
+          description={intl.formatMessage({ id: "leaseTemplates.description", defaultMessage: "Manage the available templates to request leases from" })}
         >
-          Lease Templates
+          {intl.formatMessage({ id: "leaseTemplates.title", defaultMessage: "Lease Templates" })}
         </Header>
       }
     >
