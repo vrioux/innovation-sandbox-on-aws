@@ -10,7 +10,9 @@ import { FC, useMemo } from "react";
 import { IsbUser } from "@amzn/innovation-sandbox-commons/types/isb-types";
 import { useAppContext } from "@amzn/innovation-sandbox-frontend/components/AppContext/context";
 import { spacerSvg } from "@amzn/innovation-sandbox-frontend/components/AppLayout/constants";
+import { useLocale } from "@amzn/innovation-sandbox-frontend/i18n/IntlProvider";
 import { useAppLayoutContext } from "@aws-northstar/ui/components/AppLayout";
+import { useTranslation } from "@amzn/innovation-sandbox-frontend/hooks/useTranslation";
 
 export interface NavHeaderProps {
   title: string;
@@ -29,27 +31,29 @@ export const NavHeader: FC<NavHeaderProps> = ({
 }) => {
   const { theme, density, setTheme, setDensity } = useAppContext();
   const { setToolsOpen, setToolsHide } = useAppLayoutContext();
+  const { locale, setLocale } = useLocale();
+  const { t } = useTranslation();
 
   const utilities: TopNavigationProps.Utility[] = useMemo(() => {
     const menu: TopNavigationProps.Utility[] = [
       {
         type: "menu-dropdown",
         iconName: "settings",
-        ariaLabel: "Settings",
+        ariaLabel: t("common.settings", "Settings"),
         items: [
           {
             id: "theme",
-            text: "Theme",
+            text: t("settings.theme", "Theme"),
             items: [
               {
                 id: "theme.light",
-                text: "Light",
+                text: t("settings.theme.light", "Light"),
                 iconName: theme === Mode.Light ? "check" : undefined,
                 iconSvg: theme !== Mode.Light ? spacerSvg : undefined,
               },
               {
                 id: "theme.dark",
-                text: "Dark",
+                text: t("settings.theme.dark", "Dark"),
                 iconName: theme === Mode.Dark ? "check" : undefined,
                 iconSvg: theme !== Mode.Dark ? spacerSvg : undefined,
               },
@@ -57,20 +61,38 @@ export const NavHeader: FC<NavHeaderProps> = ({
           },
           {
             id: "density",
-            text: "Density",
+            text: t("settings.density", "Density"),
             items: [
               {
                 id: "density.comfortable",
-                text: "Comfortable",
+                text: t("settings.density.comfortable", "Comfortable"),
                 iconName: density === Density.Comfortable ? "check" : undefined,
                 iconSvg:
                   density !== Density.Comfortable ? spacerSvg : undefined,
               },
               {
                 id: "density.compact",
-                text: "Compact",
+                text: t("settings.density.compact", "Compact"),
                 iconName: density === Density.Compact ? "check" : undefined,
                 iconSvg: density !== Density.Compact ? spacerSvg : undefined,
+              },
+            ],
+          },
+          {
+            id: "language",
+            text: t("settings.language", "Language"),
+            items: [
+              {
+                id: "language.en",
+                text: t("settings.language.en", "English"),
+                iconName: locale === "en" ? "check" : undefined,
+                iconSvg: locale !== "en" ? spacerSvg : undefined,
+              },
+              {
+                id: "language.fr",
+                text: t("settings.language.fr", "Français"),
+                iconName: locale === "fr" ? "check" : undefined,
+                iconSvg: locale !== "fr" ? spacerSvg : undefined,
               },
             ],
           },
@@ -89,6 +111,12 @@ export const NavHeader: FC<NavHeaderProps> = ({
             case "density.compact":
               setDensity(Density.Compact);
               break;
+            case "language.en":
+              setLocale("en");
+              break;
+            case "language.fr":
+              setLocale("fr");
+              break;
             default:
               break;
           }
@@ -97,6 +125,7 @@ export const NavHeader: FC<NavHeaderProps> = ({
       {
         type: "button",
         iconName: "status-info",
+        ariaLabel: t("common.help", "Help"),
         onClick: () => {
           setToolsHide(false);
           setToolsOpen((prev) => !prev);
@@ -110,13 +139,13 @@ export const NavHeader: FC<NavHeaderProps> = ({
         text: user.displayName,
         description: user.email,
         iconName: "user-profile",
-        items: [{ id: "exit", text: "Exit" }],
+        items: [{ id: "exit", text: t("common.logout", "Exit") }],
         onItemClick: onExit,
       });
     }
 
     return menu;
-  }, [theme, density, setDensity, setTheme, user, onExit]);
+  }, [theme, density, setDensity, setTheme, user, onExit, locale, setLocale, t]);
 
   const topNavLogo = logo ? { src: logo, alt: title } : undefined;
 

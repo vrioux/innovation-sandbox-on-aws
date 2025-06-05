@@ -9,6 +9,7 @@ import {
   StatusIndicator,
 } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
 
 import styles from "@amzn/innovation-sandbox-frontend/components/AccountsSummary/styles.module.scss";
 import Animate from "@amzn/innovation-sandbox-frontend/components/Animate";
@@ -23,13 +24,13 @@ export const NoAccounts = () => {
           <Animate>
             <SpaceBetween size="m" alignItems="center">
               <StatusIndicator type="warning">
-                It looks like there are no accounts in the account pool.
+                <FormattedMessage id="accounts.noAccounts" />
               </StatusIndicator>
               <Box>
-                Start adding accounts to get started with Innovation Sandbox.
+                <FormattedMessage id="accounts.startAdding" />
               </Box>
               <Button onClick={() => navigate("/accounts/new")}>
-                Add accounts
+                <FormattedMessage id="accounts.addButton" />
               </Button>
             </SpaceBetween>
           </Animate>

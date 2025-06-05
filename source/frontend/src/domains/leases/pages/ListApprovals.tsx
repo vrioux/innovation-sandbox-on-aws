@@ -11,6 +11,7 @@ import {
 } from "@cloudscape-design/components";
 import moment from "moment";
 import { useEffect, useState } from "react";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { LeaseWithLeaseId as Lease } from "@amzn/innovation-sandbox-commons/data/lease/lease";
 import { InfoLink } from "@amzn/innovation-sandbox-frontend/components/InfoLink";
@@ -55,32 +56,32 @@ type ReviewModalContentProps = {
   reviewLease: (params: { leaseId: string; approve: boolean }) => Promise<any>;
 };
 
-const createColumnDefinitions = (includeLinks: boolean) => [
+const createColumnDefinitions = (includeLinks: boolean, intl: any) => [
   {
     id: "requestor",
-    header: "Requested by",
+    header: intl.formatMessage({ id: "approvals.table.requestedBy" }),
     sortingField: "requestor.name",
     cell: (
-      lease: Lease, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+      lease: Lease,
     ) => <RequestorCell lease={lease} includeLinks={includeLinks} />,
   },
   {
     id: "originalLeaseTemplateName",
-    header: "Lease Template",
+    header: intl.formatMessage({ id: "approvals.table.leaseTemplate" }),
     sortingField: "originalLeaseTemplateName",
     cell: (lease: Lease) => lease.originalLeaseTemplateName,
   },
   {
     id: "dateRequested",
-    header: "Requested",
+    header: intl.formatMessage({ id: "approvals.table.requested" }),
     sortingField: "dateRequested",
-    cell: (lease: Lease) => <DateRequestedCell lease={lease} />, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+    cell: (lease: Lease) => <DateRequestedCell lease={lease} />,
   },
   {
     id: "comments",
-    header: "Comments",
+    header: intl.formatMessage({ id: "approvals.table.comments" }),
     sortingField: "comments",
-    cell: (lease: Lease) => <CommentsCell lease={lease} />, // NOSONAR typescript:S6478 - the way the table component works requires defining component during render
+    cell: (lease: Lease) => <CommentsCell lease={lease} />,
   },
 ];
 
@@ -89,11 +90,15 @@ const ReviewModalContent = ({
   mode,
   reviewLease,
 }: ReviewModalContentProps) => {
+  const intl = useIntl();
   return (
     <BatchActionReview
       items={selectedRequests}
-      description={`${selectedRequests.length} lease request(s) to review`}
-      columnDefinitions={createColumnDefinitions(false)}
+      description={intl.formatMessage(
+        { id: "approvals.modal.description" },
+        { count: selectedRequests.length }
+      )}
+      columnDefinitions={createColumnDefinitions(false, intl)}
       identifierKey="leaseId"
       onSubmit={async (lease: Lease) => {
         await reviewLease({
@@ -103,15 +108,17 @@ const ReviewModalContent = ({
       }}
       onSuccess={() => {
         showSuccessToast(
-          mode === "approve"
-            ? "Lease request(s) were successfully approved."
-            : "Lease request(s) were successfully denied.",
+          intl.formatMessage({
+            id: mode === "approve"
+              ? "approvals.toast.success.approve"
+              : "approvals.toast.success.deny",
+          })
         );
       }}
       onError={() =>
         showErrorToast(
-          "One or more lease requests failed to review, try resubmitting.",
-          "Failed to review lease requests",
+          intl.formatMessage({ id: "approvals.toast.error" }),
+          intl.formatMessage({ id: "approvals.toast.error.title" })
         )
       }
     />
@@ -122,6 +129,7 @@ export const ListApprovals = () => {
   // base ui hooks
   const setBreadcrumb = useBreadcrumb();
   const { setTools } = useAppLayoutContext();
+  const intl = useIntl();
 
   // modal hook
   const { showModal } = useModal();
@@ -135,8 +143,8 @@ export const ListApprovals = () => {
 
   const init = async () => {
     setBreadcrumb([
-      { text: "Home", href: "/" },
-      { text: "Approvals", href: "/approvals" },
+      { text: intl.formatMessage({ id: "common.home" }), href: "/" },
+      { text: intl.formatMessage({ id: "approvals.title" }), href: "/approvals" },
     ]);
     setTools(<Markdown file="approvals" />);
   };
@@ -147,7 +155,11 @@ export const ListApprovals = () => {
 
   const showReviewModal = (mode: "approve" | "deny") => {
     showModal({
-      header: mode === "approve" ? "Approve request(s)" : "Deny request(s)",
+      header: intl.formatMessage({
+        id: mode === "approve"
+          ? "approvals.modal.approve"
+          : "approvals.modal.deny",
+      }),
       content: (
         <ReviewModalContent
           selectedRequests={selectedRequests}
@@ -170,22 +182,23 @@ export const ListApprovals = () => {
         <Header
           variant="h1"
           info={<InfoLink markdown="approvals" />}
-          description="Manage requests to lease sandbox accounts"
+          description={<FormattedMessage id="approvals.description" />}
         >
-          Approvals
+          <FormattedMessage id="approvals.title" />
         </Header>
       }
     >
       <Table
         stripedRows
         trackBy="leaseId"
-        columnDefinitions={createColumnDefinitions(true)}
-        header="Approvals"
+        columnDefinitions={createColumnDefinitions(true, intl)}
+        header={<FormattedMessage id="approvals.table.header" />}
         totalItemsCount={(requests || []).length}
         items={requests || []}
         selectedItems={selectedRequests}
         onSelectionChange={handleSelectionChange}
         loading={isFetching}
+        empty={<FormattedMessage id="approvals.noPending" />}
         actions={
           <SpaceBetween direction="horizontal" size="s">
             <Button
@@ -196,14 +209,20 @@ export const ListApprovals = () => {
             <ButtonDropdown
               disabled={selectedRequests.length === 0}
               items={[
-                { text: "Approve request(s)", id: "approve" },
-                { text: "Deny request(s)", id: "deny" },
+                {
+                  text: intl.formatMessage({ id: "approvals.actions.approve" }),
+                  id: "approve",
+                },
+                {
+                  text: intl.formatMessage({ id: "approvals.actions.deny" }),
+                  id: "deny",
+                },
               ]}
               onItemClick={({ detail }) => {
                 showReviewModal(detail.id === "approve" ? "approve" : "deny");
               }}
             >
-              Actions
+              <FormattedMessage id="common.actions" />
             </ButtonDropdown>
           </SpaceBetween>
         }

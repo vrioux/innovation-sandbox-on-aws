@@ -3,22 +3,22 @@
 
 import { useGetConfigurations } from "@amzn/innovation-sandbox-frontend/domains/settings/hooks";
 import { Alert, Box, Link } from "@cloudscape-design/components";
+import { useIntl } from "react-intl";
 
 export const MaintenanceBanner = () => {
   const { data: config } = useGetConfigurations();
+  const intl = useIntl();
 
   if (config?.maintenanceMode) {
     return (
       <Box margin={{ bottom: "l" }}>
-        <Alert type="warning" header="Maintenance Mode" dismissible={false}>
-          Innovation Sandbox on AWS is currently in maintenance mode. Access to
-          the web application is limited to admin users. To disable maintenance
-          mode, admins need to go to{" "}
+        <Alert type="warning" header={intl.formatMessage({ id: "maintenance.header" })} dismissible={false}>
+          {intl.formatMessage({ id: "maintenance.message" })}{" "}
           <Link
             external
             href="https://console.aws.amazon.com/systems-manager/appconfig/applications"
           >
-            AWS AppConfig
+            {intl.formatMessage({ id: "maintenance.appConfigLink" })}
           </Link>
           .
         </Alert>

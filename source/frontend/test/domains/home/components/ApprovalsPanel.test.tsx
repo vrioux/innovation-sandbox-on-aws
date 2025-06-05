@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
+import { IntlProvider } from "react-intl";
 
 import { ApprovalsPanel } from "@amzn/innovation-sandbox-frontend/domains/home/components/ApprovalsPanel";
 import { config } from "@amzn/innovation-sandbox-frontend/helpers/config";
@@ -13,6 +14,19 @@ import { createPendingLease } from "@amzn/innovation-sandbox-frontend/mocks/fact
 import { mockLeaseApi } from "@amzn/innovation-sandbox-frontend/mocks/mockApi";
 import { server } from "@amzn/innovation-sandbox-frontend/mocks/server";
 import { renderWithQueryClient } from "@amzn/innovation-sandbox-frontend/setupTests";
+
+// Mock messages for testing
+const messages = {
+  "approvals.title": "Approvals",
+  "common.loading": "Loading...",
+  "approvals.error.loading": "Approvals could not be loaded.",
+  "approvals.noPending": "No pending approvals. Nothing to review.",
+  "common.pending": "Pending approvals",
+  "approvals.pending.single": "There is 1 pending approval.",
+  "approvals.pending.multiple": "There are {count} pending approvals.",
+  "approvals.actions.view": "View approvals",
+  "common.refresh": "Refresh",
+};
 
 // Mock ResizeObserver
 class ResizeObserver {
@@ -36,9 +50,11 @@ vi.mock("react-router-dom", async () => {
 describe("ApprovalsPanel", () => {
   const renderComponent = () =>
     renderWithQueryClient(
-      <Router>
-        <ApprovalsPanel />
-      </Router>,
+      <IntlProvider messages={messages} locale="en">
+        <Router>
+          <ApprovalsPanel />
+        </Router>
+      </IntlProvider>,
     );
 
   test("renders the header", async () => {
@@ -58,9 +74,7 @@ describe("ApprovalsPanel", () => {
 
     renderComponent();
 
-    expect(
-      screen.getByText("Checking for approval requests..."),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
   test("displays success message when there are no pending approvals", async () => {
@@ -86,13 +100,7 @@ describe("ApprovalsPanel", () => {
     await waitFor(() => {
       expect(screen.getByText("Pending approvals")).toBeInTheDocument();
       expect(
-        screen.getByText((content) => content.includes("There are")),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText((content) => content.includes("2")),
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText((content) => content.includes("pending approvals")),
+        screen.getByText("There are 2 pending approvals."),
       ).toBeInTheDocument();
       expect(screen.getByText("View approvals")).toBeInTheDocument();
     });

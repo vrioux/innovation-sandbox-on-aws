@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
+import { IntlProvider } from "react-intl";
 
 import { MyLeases } from "@amzn/innovation-sandbox-frontend/domains/home/components/MyLeases";
 import { config } from "@amzn/innovation-sandbox-frontend/helpers/config";
@@ -17,6 +18,7 @@ import {
 import { mockLeaseApi } from "@amzn/innovation-sandbox-frontend/mocks/mockApi";
 import { server } from "@amzn/innovation-sandbox-frontend/mocks/server";
 import { renderWithQueryClient } from "@amzn/innovation-sandbox-frontend/setupTests";
+import { messages } from "@amzn/innovation-sandbox-frontend/i18n/config";
 import moment from "moment";
 
 const mockNavigate = vi.fn();
@@ -51,14 +53,16 @@ vi.mock("@amzn/innovation-sandbox-frontend/domains/settings/hooks", () => ({
 describe("MyLeases", () => {
   const renderComponent = () =>
     renderWithQueryClient(
-      <Router>
-        <MyLeases />
-      </Router>,
+      <IntlProvider messages={messages.en} locale="en" defaultLocale="en">
+        <Router>
+          <MyLeases />
+        </Router>
+      </IntlProvider>,
     );
 
   test("renders loading state", async () => {
     renderComponent();
-    expect(screen.getByText("Loading your leases...")).toBeInTheDocument();
+    expect(screen.getByText(messages.en["myLeases.loading"])).toBeInTheDocument();
   });
 
   test("renders leases with correct count and content", async () => {
@@ -77,7 +81,7 @@ describe("MyLeases", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText("My Leases")).toBeInTheDocument();
+      expect(screen.getByText(messages.en["myLeases.title"])).toBeInTheDocument();
       expect(screen.getByText("(3)")).toBeInTheDocument();
       expect(
         screen.getByText(mockLease1.originalLeaseTemplateName),
@@ -109,7 +113,7 @@ describe("MyLeases", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText("My Leases")).toBeInTheDocument();
+      expect(screen.getByText(messages.en["myLeases.title"])).toBeInTheDocument();
       expect(screen.getByText("(1)")).toBeInTheDocument();
       expect(
         screen.getByText(mockLease1.originalLeaseTemplateName),
@@ -128,9 +132,11 @@ describe("MyLeases", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("You currently don't have any leases."),
+        screen.getByText(messages.en["myLeases.empty.header"]),
       ).toBeInTheDocument();
-      expect(screen.getByText("Request a new lease")).toBeInTheDocument();
+      expect(
+        screen.getByText(messages.en["myLeases.empty.action"]),
+      ).toBeInTheDocument();
     });
   });
 
@@ -148,7 +154,7 @@ describe("MyLeases", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText("Your leases can't be retrieved at the moment."),
+        screen.getByText(messages.en["myLeases.error.description"]),
       ).toBeInTheDocument();
     });
   });
@@ -161,13 +167,13 @@ describe("MyLeases", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByLabelText("Refresh")).toBeInTheDocument();
+      expect(screen.getByLabelText(messages.en["common.refresh"])).toBeInTheDocument();
       expect(
         screen.getByText(mockLease.originalLeaseTemplateName),
       ).toBeInTheDocument();
     });
 
-    const refreshButton = screen.getByLabelText("Refresh");
+    const refreshButton = screen.getByLabelText(messages.en["common.refresh"]);
     await userEvent.click(refreshButton);
 
     await waitFor(() => {
@@ -184,10 +190,12 @@ describe("MyLeases", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText("Request a new lease")).toBeInTheDocument();
+      expect(
+        screen.getByText(messages.en["myLeases.empty.action"]),
+      ).toBeInTheDocument();
     });
 
-    await userEvent.click(screen.getByText("Request a new lease"));
+    await userEvent.click(screen.getByText(messages.en["myLeases.empty.action"]));
 
     expect(mockNavigate).toHaveBeenCalledWith("/request");
   });

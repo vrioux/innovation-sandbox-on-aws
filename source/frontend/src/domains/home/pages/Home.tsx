@@ -9,6 +9,7 @@ import {
 } from "@cloudscape-design/components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FormattedMessage } from "react-intl";
 
 import { IsbUser } from "@amzn/innovation-sandbox-commons/types/isb-types";
 import { Divider } from "@amzn/innovation-sandbox-frontend/components/Divider";
@@ -70,6 +71,7 @@ export const Home = () => {
     );
   };
 
+
   return (
     <ContentLayout
       header={
@@ -77,12 +79,12 @@ export const Home = () => {
           variant="h1"
           actions={
             <Button onClick={() => navigate("/request")} variant="primary">
-              Request a new lease
+              <FormattedMessage id="home.requestLease" />
             </Button>
           }
           info={<InfoLink markdown="home" />}
         >
-          Welcome to Innovation Sandbox on AWS
+          <FormattedMessage id="home.welcome" />
         </Header>
       }
     >

@@ -6,12 +6,14 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
+import { IntlProvider } from "react-intl";
 
 import { Home } from "@amzn/innovation-sandbox-frontend/domains/home/pages/Home";
 import { createActiveLease } from "@amzn/innovation-sandbox-frontend/mocks/factories/leaseFactory";
 import { mockLeaseApi } from "@amzn/innovation-sandbox-frontend/mocks/mockApi";
 import { server } from "@amzn/innovation-sandbox-frontend/mocks/server";
 import { renderWithQueryClient } from "@amzn/innovation-sandbox-frontend/setupTests";
+import { messages } from "@amzn/innovation-sandbox-frontend/i18n/config";
 
 const mockNavigate = vi.fn();
 const mockSetBreadcrumb = vi.fn();
@@ -51,7 +53,9 @@ describe("Home", () => {
   const renderComponent = () =>
     renderWithQueryClient(
       <Router>
-        <Home />
+        <IntlProvider messages={messages.en} locale="en" defaultLocale="en">
+          <Home />
+        </IntlProvider>
       </Router>,
     );
 
@@ -65,7 +69,7 @@ describe("Home", () => {
       const header = createWrapper().findContentLayout()?.findHeader();
       expect(header?.getElement()).toBeInTheDocument();
       expect(header?.getElement()).toHaveTextContent(
-        "Welcome to Innovation Sandbox on AWS",
+        messages.en["home.welcome"],
       );
     });
   });
@@ -140,7 +144,7 @@ describe("Home", () => {
     renderComponent();
 
     expect(mockSetBreadcrumb).toHaveBeenCalledWith([
-      { text: "Home", href: "/" },
+      { text: messages.en["common.home"], href: "/" },
     ]);
   });
 
@@ -148,7 +152,7 @@ describe("Home", () => {
     const user = userEvent.setup();
     renderComponent();
 
-    const requestButton = await screen.findByText("Request a new lease");
+    const requestButton = await screen.findByText(messages.en["home.requestLease"]);
     await user.click(requestButton);
 
     expect(mockNavigate).toHaveBeenCalledWith("/request");

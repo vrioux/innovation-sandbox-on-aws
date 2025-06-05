@@ -10,6 +10,9 @@ import { afterAll, afterEach, beforeAll, vi } from "vitest";
 
 import { server } from "@amzn/innovation-sandbox-frontend/mocks/server";
 
+// Note: Global test functions are already declared by Vitest
+// We don't need to redeclare them here
+
 // Create a single QueryClient instance
 const queryClient = new QueryClient({
   defaultOptions: {

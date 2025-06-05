@@ -2,48 +2,61 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { SideNavigationProps } from "@cloudscape-design/components";
+import { useIntl } from "react-intl";
 
 import { ApprovalsBadge } from "@amzn/innovation-sandbox-frontend/domains/leases/components/ApprovalsBadge";
 
-export const commonNavItems: SideNavigationProps.Item[] = [
-  { type: "divider" },
-  {
-    external: true,
-    href: "https://docs.aws.amazon.com/solutions/latest/innovation-sandbox-on-aws/use-the-solution.html",
-    text: "Documentation",
-    type: "link",
-  },
-];
+export const useNavigationItems = () => {
+  const intl = useIntl();
+  const t = (id: string, defaultMessage: string) => intl.formatMessage({ id, defaultMessage });
 
-export const userNavItems: SideNavigationProps.Item[] = [
-  { href: "/", text: "Home", type: "link" },
-];
+  const commonNavItems: SideNavigationProps.Item[] = [
+    { type: "divider" },
+    {
+      external: true,
+      href: "https://docs.aws.amazon.com/solutions/latest/innovation-sandbox-on-aws/use-the-solution.html",
+      text: t("nav.documentation", "Documentation"),
+      type: "link",
+    },
+  ];
 
-export const managerNavItems: SideNavigationProps.Item[] = [
-  ...userNavItems,
-  { type: "divider" },
-  {
-    href: "/approvals",
-    text: "Approvals",
-    type: "link",
-    info: <ApprovalsBadge />,
-  },
-  { href: "/leases", text: "Leases", type: "link" },
-  { href: "/lease_templates", text: "Lease Templates", type: "link" },
-];
+  const userNavItems: SideNavigationProps.Item[] = [
+    { href: "/", text: t("nav.home", "Home"), type: "link" },
+  ];
 
-export const adminNavItems: SideNavigationProps.Item[] = [
-  ...managerNavItems,
-  { type: "divider" },
-  {
-    type: "section",
-    text: "Administration",
-    items: [
-      { href: "/accounts", text: "Accounts", type: "link" },
-      { href: "/settings", text: "Settings", type: "link" },
-    ],
-  },
-];
+  const managerNavItems: SideNavigationProps.Item[] = [
+    ...userNavItems,
+    { type: "divider" },
+    {
+      href: "/approvals",
+      text: t("nav.approvals", "Approvals"),
+      type: "link",
+      info: <ApprovalsBadge />,
+    },
+    { href: "/leases", text: t("nav.leases", "Leases"), type: "link" },
+    { href: "/lease_templates", text: t("nav.leaseTemplates", "Lease Templates"), type: "link" },
+  ];
+
+  const adminNavItems: SideNavigationProps.Item[] = [
+    ...managerNavItems,
+    { type: "divider" },
+    {
+      type: "section",
+      text: t("nav.administration", "Administration"),
+      items: [
+        { href: "/accounts", text: t("nav.accounts", "Accounts"), type: "link" },
+        { href: "/settings", text: t("nav.settings", "Settings"), type: "link" },
+      ],
+    },
+  ];
+
+  return {
+    commonNavItems,
+    userNavItems,
+    managerNavItems,
+    adminNavItems,
+  };
+};
 
 export const spacerSvg = (
   <svg

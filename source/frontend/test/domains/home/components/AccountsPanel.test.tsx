@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
+import { IntlProvider } from "react-intl";
 
 import { AccountsPanel } from "@amzn/innovation-sandbox-frontend/domains/home/components/AccountsPanel";
 import { config } from "@amzn/innovation-sandbox-frontend/helpers/config";
@@ -13,6 +14,7 @@ import { createSandboxAccount } from "@amzn/innovation-sandbox-frontend/mocks/fa
 import { mockAccountApi } from "@amzn/innovation-sandbox-frontend/mocks/mockApi";
 import { server } from "@amzn/innovation-sandbox-frontend/mocks/server";
 import { renderWithQueryClient } from "@amzn/innovation-sandbox-frontend/setupTests";
+import { messages } from "@amzn/innovation-sandbox-frontend/i18n/config";
 
 // Mock the useNavigate hook
 const mockNavigate = vi.fn();
@@ -36,16 +38,18 @@ window.ResizeObserver = ResizeObserver;
 describe("AccountsPanel", () => {
   const renderComponent = () =>
     renderWithQueryClient(
-      <Router>
-        <AccountsPanel />
-      </Router>,
+      <IntlProvider messages={messages.en} locale="en" defaultLocale="en">
+        <Router>
+          <AccountsPanel />
+        </Router>
+      </IntlProvider>,
     );
 
   test("renders the header and manage accounts button", async () => {
     renderComponent();
 
-    expect(screen.getByText("Administration")).toBeInTheDocument();
-    expect(screen.getByText("Manage accounts")).toBeInTheDocument();
+    expect(screen.getByText(messages.en["nav.administration"])).toBeInTheDocument();
+    expect(screen.getByText(messages.en["manageAccounts.title"])).toBeInTheDocument();
   });
 
   test("displays loading state while fetching accounts", async () => {
@@ -108,18 +112,16 @@ describe("AccountsPanel", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(
-          "It looks like there are no accounts in the account pool.",
-        ),
+        screen.getByText(messages.en["accounts.noAccounts"]),
       ).toBeInTheDocument();
-      expect(screen.getByText("Add accounts")).toBeInTheDocument();
+      expect(screen.getByText(messages.en["accounts.addButton"])).toBeInTheDocument();
     });
   });
 
   test("navigates to accounts page when manage accounts button is clicked", async () => {
     renderComponent();
 
-    const manageAccountsButton = screen.getByText("Manage accounts");
+    const manageAccountsButton = screen.getByText(messages.en["manageAccounts.title"]);
     await userEvent.click(manageAccountsButton);
 
     expect(mockNavigate).toHaveBeenCalledWith("/accounts");
@@ -132,10 +134,10 @@ describe("AccountsPanel", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText("Add accounts")).toBeInTheDocument();
+      expect(screen.getByText(messages.en["accounts.addButton"])).toBeInTheDocument();
     });
 
-    const addAccountsButton = screen.getByText("Add accounts");
+    const addAccountsButton = screen.getByText(messages.en["accounts.addButton"]);
     await userEvent.click(addAccountsButton);
 
     expect(mockNavigate).toHaveBeenCalledWith("/accounts/new");
@@ -155,9 +157,7 @@ describe("AccountsPanel", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(
-          "It looks like there are no accounts in the account pool.",
-        ),
+        screen.getByText(messages.en["accounts.noAccounts"]),
       ).toBeInTheDocument();
     });
   });

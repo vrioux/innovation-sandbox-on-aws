@@ -10,6 +10,7 @@ import {
   SpaceBetween,
 } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
+import { useIntl } from "react-intl";
 
 import { ErrorPanel } from "@amzn/innovation-sandbox-frontend/components/ErrorPanel";
 import { Loader } from "@amzn/innovation-sandbox-frontend/components/Loader";
@@ -17,6 +18,7 @@ import { useGetPendingApprovals } from "@amzn/innovation-sandbox-frontend/domain
 
 export const ApprovalsPanel = () => {
   const navigate = useNavigate();
+  const intl = useIntl();
   const {
     data: approvals,
     isFetching,
@@ -29,7 +31,7 @@ export const ApprovalsPanel = () => {
     if (isFetching) {
       return (
         <Container>
-          <Loader label="Checking for approval requests..." />
+          <Loader label={intl.formatMessage({ id: "common.loading" })} />
         </Container>
       );
     }
@@ -37,7 +39,7 @@ export const ApprovalsPanel = () => {
     if (isError || !approvals) {
       return (
         <ErrorPanel
-          description="Approvals could not be loaded."
+          description={intl.formatMessage({ id: "approvals.error.loading" })}
           retry={refetch}
           error={error as Error}
         />
@@ -46,25 +48,26 @@ export const ApprovalsPanel = () => {
 
     if (approvals.length === 0) {
       return (
-        <Alert type="success">No pending approvals. Nothing to review.</Alert>
+        <Alert type="success">{intl.formatMessage({ id: "approvals.noPending" })}</Alert>
       );
     }
 
     return (
-      <Alert type="warning" header="Pending approvals">
+      <Alert type="warning" header={intl.formatMessage({ id: "common.pending" })}>
         <Box margin={{ top: "xs" }}>
           {approvals.length === 1 ? (
-            <>
-              There is <strong>1</strong> pending approval.
-            </>
+            intl.formatMessage({ id: "approvals.pending.single" })
           ) : (
-            <>
-              There are <strong>{approvals.length} pending approvals.</strong>
-            </>
+            intl.formatMessage(
+              { id: "approvals.pending.multiple" },
+              { count: approvals.length }
+            )
           )}
         </Box>
         <Box margin={{ top: "s" }}>
-          <Button onClick={() => navigate("/approvals")}>View approvals</Button>
+          <Button onClick={() => navigate("/approvals")}>
+            {intl.formatMessage({ id: "approvals.actions.view" })}
+          </Button>
         </Box>
       </Alert>
     );
@@ -77,13 +80,13 @@ export const ApprovalsPanel = () => {
         actions={
           <Button
             iconName="refresh"
-            ariaLabel="Refresh"
+            ariaLabel={intl.formatMessage({ id: "common.refresh" })}
             disabled={isFetching}
             onClick={() => refetch()}
           />
         }
       >
-        Approvals
+        {intl.formatMessage({ id: "approvals.title" })}
       </Header>
       {body()}
     </SpaceBetween>

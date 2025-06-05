@@ -9,6 +9,7 @@ import { ToastContainer } from "react-toastify/unstyled";
 
 import { AppLayout } from "@amzn/innovation-sandbox-frontend/components/AppLayout";
 import { Authenticator } from "@amzn/innovation-sandbox-frontend/components/Authenticator";
+import { IntlProvider } from "@amzn/innovation-sandbox-frontend/i18n/IntlProvider";
 import { AddAccounts } from "@amzn/innovation-sandbox-frontend/domains/accounts/pages/AddAccounts";
 import { ListAccounts } from "@amzn/innovation-sandbox-frontend/domains/accounts/pages/ListAccounts";
 import { Home } from "@amzn/innovation-sandbox-frontend/domains/home/pages/Home";
@@ -26,48 +27,50 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // Import local css
 import "./assets/styles/app.scss";
 
-export const App = () => {
-  const routes = [
-    { path: "/", Element: Home },
-    { path: "/request", Element: RequestLease },
-    { path: "/settings", Element: Settings },
-    { path: "/lease_templates", Element: ListLeaseTemplates },
-    { path: "/lease_templates/new", Element: AddLeaseTemplate },
-    { path: "/lease_templates/edit/:uuid", Element: UpdateLeaseTemplate },
-    { path: "/accounts", Element: ListAccounts },
-    { path: "/accounts/new", Element: AddAccounts },
-    { path: "/approvals", Element: ListApprovals },
-    { path: "/approvals/:leaseId", Element: ApprovalDetails },
-    { path: "/leases", Element: ListLeases },
-    { path: "/leases/edit/:leaseId", Element: UpdateLease },
-  ];
-
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        retry: false,
-      },
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      retry: false,
     },
-  });
+  },
+});
 
+const routes = [
+  { path: "/", Element: Home },
+  { path: "/request", Element: RequestLease },
+  { path: "/settings", Element: Settings },
+  { path: "/lease_templates", Element: ListLeaseTemplates },
+  { path: "/lease_templates/new", Element: AddLeaseTemplate },
+  { path: "/lease_templates/edit/:uuid", Element: UpdateLeaseTemplate },
+  { path: "/accounts", Element: ListAccounts },
+  { path: "/accounts/new", Element: AddAccounts },
+  { path: "/approvals", Element: ListApprovals },
+  { path: "/approvals/:leaseId", Element: ApprovalDetails },
+  { path: "/leases", Element: ListLeases },
+  { path: "/leases/edit/:leaseId", Element: UpdateLease },
+];
+
+export const App = () => {
   return (
-    <Authenticator>
-      <Router>
+    <IntlProvider>
+      <Authenticator>
         <QueryClientProvider client={queryClient}>
-          <ModalProvider>
-            <AppLayout>
-              <Routes>
-                {routes.map(({ path, Element }) => (
-                  <Route key={path} path={path} element={<Element />} />
-                ))}
-              </Routes>
-            </AppLayout>
-          </ModalProvider>
+          <Router>
+            <ModalProvider>
+              <AppLayout>
+                <Routes>
+                  {routes.map(({ path, Element }) => (
+                    <Route key={path} path={path} element={<Element />} />
+                  ))}
+                </Routes>
+              </AppLayout>
+            </ModalProvider>
+          </Router>
+          <ToastContainer />
         </QueryClientProvider>
-      </Router>
-      <ToastContainer />
-    </Authenticator>
+      </Authenticator>
+    </IntlProvider>
   );
 };

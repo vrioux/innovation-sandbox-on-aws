@@ -11,17 +11,13 @@ import { IsbUser } from "@amzn/innovation-sandbox-commons/types/isb-types";
 import logo from "@amzn/innovation-sandbox-frontend/assets/images/logo.png";
 import { useAppContext } from "@amzn/innovation-sandbox-frontend/components/AppContext/context";
 import { AppLayoutProps } from "@amzn/innovation-sandbox-frontend/components/AppLayout";
-import {
-  adminNavItems,
-  commonNavItems,
-  managerNavItems,
-  userNavItems,
-} from "@amzn/innovation-sandbox-frontend/components/AppLayout/constants";
+import { useNavigationItems } from "@amzn/innovation-sandbox-frontend/components/AppLayout/constants";
 import { NavHeader } from "@amzn/innovation-sandbox-frontend/components/AppLayout/NavHeader";
 import { FullPageLoader } from "@amzn/innovation-sandbox-frontend/components/FullPageLoader";
 import { MaintenanceBanner } from "@amzn/innovation-sandbox-frontend/components/MaintenanceBanner";
 import { AuthService } from "@amzn/innovation-sandbox-frontend/helpers/AuthService";
 import { useInit } from "@amzn/innovation-sandbox-frontend/hooks/useInit";
+import { useTranslation } from "@amzn/innovation-sandbox-frontend/hooks/useTranslation";
 
 export const BaseLayout = ({ children }: AppLayoutProps) => {
   const queryClient = useQueryClient();
@@ -29,6 +25,7 @@ export const BaseLayout = ({ children }: AppLayoutProps) => {
   const { breadcrumb } = useAppContext();
   const [user, setUser] = useState<IsbUser | undefined>();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const { t } = useTranslation();
 
   const onExit = () => {
     setIsLoggingOut(true);
@@ -42,6 +39,8 @@ export const BaseLayout = ({ children }: AppLayoutProps) => {
   });
 
   const navigationItems = useMemo(() => {
+    const { commonNavItems, userNavItems, managerNavItems, adminNavItems } = useNavigationItems();
+    
     if (user?.roles?.includes("Admin")) {
       return [...adminNavItems, ...commonNavItems];
     }
@@ -54,21 +53,23 @@ export const BaseLayout = ({ children }: AppLayoutProps) => {
   }, [user?.roles]);
 
   if (isLoggingOut) {
-    return <FullPageLoader label="Signing out..." />;
+    return <FullPageLoader label={t("common.signingOut", "Signing out...")} />;
   }
+
+  const appTitle = t("app.title", "Innovation Sandbox on AWS");
 
   return (
     <AppLayoutBase
       headerSelector="#app-header"
       header={
         <NavHeader
-          title="Innovation Sandbox on AWS"
+          title={appTitle}
           logo={logo}
           user={user}
           onExit={onExit}
         />
       }
-      title="Innovation Sandbox on AWS"
+      title={appTitle}
       navigationItems={navigationItems}
       navigationOpen={window.innerWidth > 688}
       breadcrumbGroup={

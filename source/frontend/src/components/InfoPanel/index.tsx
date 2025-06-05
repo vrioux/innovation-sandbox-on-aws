@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Alert, Box, Button } from "@cloudscape-design/components";
+import { useIntl } from "react-intl";
 
 interface InfoPanelProps {
   header: string;
@@ -18,12 +19,15 @@ export const InfoPanel = ({
   actionLabel,
   action,
 }: InfoPanelProps) => {
+  const intl = useIntl();
   return (
     <Alert type={type} header={header}>
       {description && <Box margin={{ top: "xs" }}>{description}</Box>}
       {action && (
         <Box margin={{ top: "s" }}>
-          <Button onClick={() => action()}>{actionLabel ?? "OK"}</Button>
+          <Button onClick={() => action()}>
+            {actionLabel ?? intl.formatMessage({ id: "common.ok" })}
+          </Button>
         </Box>
       )}
     </Alert>

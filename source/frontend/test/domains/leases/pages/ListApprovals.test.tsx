@@ -6,6 +6,7 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
+import { IntlProvider } from "react-intl";
 
 import { ListApprovals } from "@amzn/innovation-sandbox-frontend/domains/leases/pages/ListApprovals";
 import { ModalProvider } from "@amzn/innovation-sandbox-frontend/hooks/useModal";
@@ -13,6 +14,7 @@ import { createPendingLease } from "@amzn/innovation-sandbox-frontend/mocks/fact
 import { mockLeaseApi } from "@amzn/innovation-sandbox-frontend/mocks/mockApi";
 import { server } from "@amzn/innovation-sandbox-frontend/mocks/server";
 import { renderWithQueryClient } from "@amzn/innovation-sandbox-frontend/setupTests";
+import { messages } from "@amzn/innovation-sandbox-frontend/i18n/config";
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -29,11 +31,13 @@ vi.mock("@amzn/innovation-sandbox-frontend/hooks/useBreadcrumb", () => ({
 describe("ListApprovals", () => {
   const renderComponent = () =>
     renderWithQueryClient(
-      <ModalProvider>
-        <BrowserRouter>
-          <ListApprovals />
-        </BrowserRouter>
-      </ModalProvider>,
+      <IntlProvider messages={messages.en} locale="en" defaultLocale="en">
+        <ModalProvider>
+          <BrowserRouter>
+            <ListApprovals />
+          </BrowserRouter>
+        </ModalProvider>
+      </IntlProvider>,
     );
 
   const mockPendingLease = createPendingLease();
@@ -43,10 +47,10 @@ describe("ListApprovals", () => {
     const wrapper = createWrapper();
     const header = wrapper.findHeader();
     expect(header?.findHeadingText()?.getElement()).toHaveTextContent(
-      "Approvals",
+      messages.en["approvals.title"],
     );
     expect(header?.findDescription()?.getElement()).toHaveTextContent(
-      "Manage requests to lease sandbox accounts",
+      messages.en["approvals.description"],
     );
   });
 
@@ -83,7 +87,7 @@ describe("ListApprovals", () => {
       const wrapper = createWrapper();
       const table = wrapper.findTable();
       expect(table?.findEmptySlot()?.getElement()).toHaveTextContent(
-        "No items to display",
+        messages.en["approvals.noPending"],
       );
     });
   });
@@ -129,7 +133,7 @@ describe("ListApprovals", () => {
     const actionButton = wrapper.findButtonDropdown();
     await userEvent.click(actionButton!.findNativeButton().getElement());
 
-    const approveButton = screen.getByText("Approve request(s)");
+    const approveButton = screen.getByText(messages.en["approvals.actions.approve"]);
     await userEvent.click(approveButton);
 
     const modal = screen.getByRole("dialog");
@@ -139,7 +143,7 @@ describe("ListApprovals", () => {
 
     const modalContent = within(modal);
 
-    expect(modalContent.getByText("Approve request(s)")).toBeInTheDocument();
+    expect(modalContent.getByText(messages.en["approvals.modal.approve"])).toBeInTheDocument();
 
     await waitFor(() =>
       expect(
@@ -168,8 +172,8 @@ describe("ListApprovals", () => {
     const actionButton = wrapper.findButtonDropdown();
     await userEvent.click(actionButton!.findNativeButton().getElement());
 
-    const approveButton = screen.getByText("Deny request(s)");
-    await userEvent.click(approveButton);
+    const denyButton = screen.getByText(messages.en["approvals.actions.deny"]);
+    await userEvent.click(denyButton);
 
     const modal = screen.getByRole("dialog");
     await waitFor(() => {
@@ -178,7 +182,7 @@ describe("ListApprovals", () => {
 
     const modalContent = within(modal);
 
-    expect(modalContent.getByText("Deny request(s)")).toBeInTheDocument();
+    expect(modalContent.getByText(messages.en["approvals.modal.deny"])).toBeInTheDocument();
 
     await waitFor(() =>
       expect(

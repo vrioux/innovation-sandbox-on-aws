@@ -3,6 +3,7 @@
 
 import { Button, Header, SpaceBetween } from "@cloudscape-design/components";
 import { useNavigate } from "react-router-dom";
+import { useIntl } from "react-intl";
 
 import {
   isApprovalDeniedLease,
@@ -21,6 +22,7 @@ import { useMemo } from "react";
 
 export const MyLeases = () => {
   const navigate = useNavigate();
+  const intl = useIntl();
   const {
     data: leases,
     isFetching,
@@ -73,13 +75,13 @@ export const MyLeases = () => {
 
   const body = () => {
     if (isFetching) {
-      return <Loader label="Loading your leases..." />;
+      return <Loader label={intl.formatMessage({ id: "myLeases.loading" })} />;
     }
 
     if (isError) {
       return (
         <ErrorPanel
-          description="Your leases can't be retrieved at the moment."
+          description={intl.formatMessage({ id: "myLeases.error.description" })}
           retry={refetch}
           error={error as Error}
         />
@@ -89,9 +91,9 @@ export const MyLeases = () => {
     if ((filteredLeases || []).length === 0) {
       return (
         <InfoPanel
-          header="You currently don't have any leases."
-          description="To get started, click below to request a new lease."
-          actionLabel="Request a new lease"
+          header={intl.formatMessage({ id: "myLeases.empty.header" })}
+          description={intl.formatMessage({ id: "myLeases.empty.description" })}
+          actionLabel={intl.formatMessage({ id: "myLeases.empty.action" })}
           action={() => navigate("/request")}
         />
       );
@@ -116,17 +118,17 @@ export const MyLeases = () => {
     <SpaceBetween size="m">
       <Header
         variant="h2"
-        description="View a list of your leases"
+        description={intl.formatMessage({ id: "myLeases.description" })}
         actions={
           <Button
             iconName="refresh"
-            ariaLabel="Refresh"
+            ariaLabel={intl.formatMessage({ id: "common.refresh" })}
             disabled={isFetching}
             onClick={() => refetch()}
           />
         }
       >
-        My Leases {count()}
+        {intl.formatMessage({ id: "myLeases.title" })} {count()}
       </Header>
       {body()}
     </SpaceBetween>

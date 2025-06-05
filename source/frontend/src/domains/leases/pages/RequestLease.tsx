@@ -3,6 +3,7 @@
 
 import { componentTypes, validatorTypes } from "@aws-northstar/ui";
 import { useNavigate } from "react-router-dom";
+import { useIntl } from "react-intl";
 
 import { Form } from "@amzn/innovation-sandbox-frontend/components/Form";
 import { showSuccessToast } from "@amzn/innovation-sandbox-frontend/components/Toast";
@@ -17,14 +18,15 @@ import { useInit } from "@amzn/innovation-sandbox-frontend/hooks/useInit";
 export const RequestLease = () => {
   const navigate = useNavigate();
   const setBreadcrumb = useBreadcrumb();
+  const intl = useIntl();
 
   const { mutateAsync: requestNewLease, isPending: isSubmitting } =
     useRequestNewLease();
 
   useInit(() => {
     setBreadcrumb([
-      { text: "Home", href: "/" },
-      { text: "Request lease", href: "/request" },
+      { text: intl.formatMessage({ id: "common.home" }), href: "/" },
+      { text: intl.formatMessage({ id: "requestLease.title" }), href: "/request" },
     ]);
   });
 
@@ -38,7 +40,7 @@ export const RequestLease = () => {
 
     await requestNewLease(request);
     navigate("/");
-    showSuccessToast("Your request for a new lease has been submitted.");
+    showSuccessToast(intl.formatMessage({ id: "requestLease.successToast" }));
   };
 
   const onCancel = () => {
@@ -52,8 +54,8 @@ export const RequestLease = () => {
         onCancel={onCancel}
         onSubmit={onSubmit}
         schema={{
-          header: "Request lease",
-          description: "Request to lease an AWS sandbox account.",
+          header: intl.formatMessage({ id: "requestLease.title" }),
+          description: intl.formatMessage({ id: "requestLease.description" }),
           fields: [
             {
               component: componentTypes.WIZARD,
@@ -62,19 +64,18 @@ export const RequestLease = () => {
               fields: [
                 {
                   name: "lease-template",
-                  title: "Select lease template",
+                  title: intl.formatMessage({ id: "requestLease.selectTemplate" }),
                   fields: [
                     {
                       component: componentTypes.CUSTOM,
-                      label:
-                        "What lease template would you like to use request a lease?",
+                      label: intl.formatMessage({ id: "requestLease.templateQuestion" }),
                       CustomComponent: SelectLeaseTemplate,
                       isRequired: true,
                       name: "leaseTemplateUuid",
                       validate: [
                         {
                           type: validatorTypes.REQUIRED,
-                          message: "Please select an option to continue",
+                          message: intl.formatMessage({ id: "common.error.required" }),
                         },
                       ],
                     },
@@ -82,7 +83,7 @@ export const RequestLease = () => {
                 },
                 {
                   name: "terms",
-                  title: "Terms of Service",
+                  title: intl.formatMessage({ id: "requestLease.termsOfService" }),
                   fields: [
                     {
                       component: componentTypes.PLAIN_TEXT,
@@ -92,12 +93,11 @@ export const RequestLease = () => {
                     {
                       component: componentTypes.CHECKBOX,
                       name: "acceptTerms",
-                      label: "I accept the above terms of service.",
+                      label: intl.formatMessage({ id: "requestLease.acceptTerms" }),
                       validate: [
                         {
                           type: validatorTypes.REQUIRED,
-                          message:
-                            "Please accept the terms of service to continue",
+                          message: intl.formatMessage({ id: "requestLease.acceptTermsRequired" }),
                         },
                       ],
                     },
@@ -105,7 +105,7 @@ export const RequestLease = () => {
                 },
                 {
                   name: "review",
-                  title: "Review & Submit",
+                  title: intl.formatMessage({ id: "requestLease.reviewSubmit" }),
                   fields: [
                     {
                       component: componentTypes.REVIEW,
@@ -115,9 +115,8 @@ export const RequestLease = () => {
                     {
                       component: componentTypes.TEXTAREA,
                       name: "comments",
-                      label: "Comments",
-                      description:
-                        "Optional - add additional comments to support your request",
+                      label: intl.formatMessage({ id: "common.comments" }),
+                      description: intl.formatMessage({ id: "requestLease.commentsDescription" }),
                     },
                   ],
                 },
