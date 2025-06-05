@@ -3,6 +3,7 @@
 
 import { FormRenderer, FormRendererProps } from "@aws-northstar/ui";
 import { useCallback, useMemo, useState } from "react";
+import { useIntl } from 'react-intl';
 
 import {
   FormContext,
@@ -36,6 +37,8 @@ export const Form = ({ insideTab, ...props }: FormProps) => {
     [props.validate],
   );
 
+  const intl = useIntl();
+
   const onSubmit: FormRendererProps["onSubmit"] = async (...args) => {
     try {
       if (props.onSubmit) {
@@ -43,7 +46,7 @@ export const Form = ({ insideTab, ...props }: FormProps) => {
       }
     } catch (err: any) {
       const errorText = err.message ?? err.toString();
-      showErrorToast(errorText, "Whoops, something went wrong!");
+      showErrorToast(errorText, intl.formatMessage({ id: "error.form.submit" }));
     }
   };
 

@@ -12,6 +12,7 @@ import {
   SpaceBetween,
   StatusIndicator,
 } from "@cloudscape-design/components";
+import { useIntl } from 'react-intl';
 
 import {
   isExpiredLease,
@@ -42,49 +43,51 @@ export const LeaseSummary = ({ lease }: { lease: Lease }) => {
     </Popover>
   );
 
+  const intl = useIntl();
+
   return (
-    <Container header={<Header>Lease Summary</Header>}>
+    <Container header={<Header>{intl.formatMessage({ id: "lease.summary.title" })}</Header>}>
       <ColumnLayout columns={2}>
         <SpaceBetween size="l">
           <Box>
-            <FormField label="Lease ID" />
+            <FormField label={intl.formatMessage({ id: "lease.summary.leaseId" })} />
             <CopyToClipboard
               variant="inline"
               textToCopy={lease.uuid}
-              copySuccessText="Copied Lease ID"
-              copyErrorText="Failed to copy Lease ID"
+              copySuccessText={intl.formatMessage({ id: "lease.summary.copyLeaseId.success" })}
+              copyErrorText={intl.formatMessage({ id: "lease.summary.copyLeaseId.error" })}
             />
           </Box>
           <Box>
-            <FormField label="AWS Account ID" />
+            <FormField label={intl.formatMessage({ id: "lease.summary.accountId" })} />
             {isMonitoredOrExpired ? (
               <CopyToClipboard
                 variant="inline"
                 textToCopy={lease.awsAccountId}
-                copySuccessText="Copied AWS Account ID"
-                copyErrorText="Failed to copy AWS Account ID"
+                copySuccessText={intl.formatMessage({ id: "lease.summary.copyAccountId.success" })}
+                copyErrorText={intl.formatMessage({ id: "lease.summary.copyAccountId.error" })}
               />
             ) : (
               <StatusIndicator type="warning">
-                No account assigned
+                {intl.formatMessage({ id: "lease.summary.noAccount" })}
               </StatusIndicator>
             )}
           </Box>
           <Box>
-            <FormField label="Lease Template" />
+            <FormField label={intl.formatMessage({ id: "lease.summary.template" })} />
             <Box>{lease.originalLeaseTemplateName}</Box>
           </Box>
           <Box>
-            <FormField label="Requested by" />
+            <FormField label={intl.formatMessage({ id: "lease.summary.requestedBy" })} />
             <Box>{lease.userEmail}</Box>
           </Box>
           {isMonitoredOrExpired && (
             <Box>
-              <FormField label="Approved by" />
+              <FormField label={intl.formatMessage({ id: "lease.summary.approvedBy" })} />
               <Box>
                 {lease.approvedBy === "AUTO_APPROVED" ? (
                   <StatusIndicator type="success">
-                    Auto approved
+                    {intl.formatMessage({ id: "lease.summary.autoApproved" })}
                   </StatusIndicator>
                 ) : (
                   lease.approvedBy
@@ -93,7 +96,7 @@ export const LeaseSummary = ({ lease }: { lease: Lease }) => {
             </Box>
           )}
           <Box>
-            <FormField label="Status" />
+            <FormField label={intl.formatMessage({ id: "common.status" })} />
             <Box>
               <LeaseStatusBadge lease={lease} />
             </Box>
@@ -101,7 +104,9 @@ export const LeaseSummary = ({ lease }: { lease: Lease }) => {
         </SpaceBetween>
         <SpaceBetween size="l">
           <Box>
-            <FormField label={isPending ? "Max Budget" : "Budget Status"} />
+            <FormField label={isPending ? 
+              intl.formatMessage({ id: "lease.summary.maxBudget" }) : 
+              intl.formatMessage({ id: "lease.summary.budgetStatus" })} />
             {isPending ? (
               <BudgetStatus maxSpend={lease.maxSpend} />
             ) : (
@@ -116,13 +121,13 @@ export const LeaseSummary = ({ lease }: { lease: Lease }) => {
 
           {isMonitoredOrExpired && (
             <Box>
-              <FormField label="Lease started" />
+              <FormField label={intl.formatMessage({ id: "lease.summary.started" })} />
               {renderTimePopover(lease.startDate)}
             </Box>
           )}
 
           <Box>
-            <FormField label="Lease expiry" />
+            <FormField label={intl.formatMessage({ id: "lease.summary.expiry" })} />
             <DurationStatus
               date={isMonitoredOrExpired ? lease.expirationDate : undefined}
               durationInHours={lease.leaseDurationInHours}
@@ -131,18 +136,18 @@ export const LeaseSummary = ({ lease }: { lease: Lease }) => {
 
           {isMonitoredOrExpired && (
             <Box>
-              <FormField label="Last monitored" />
+              <FormField label={intl.formatMessage({ id: "lease.summary.lastMonitored" })} />
               {renderTimePopover(lease.lastCheckedDate)}
             </Box>
           )}
 
           <Box>
-            <FormField label="Comments from requester" />
+            <FormField label={intl.formatMessage({ id: "lease.summary.comments" })} />
             {lease.comments ? (
               lease.comments
             ) : (
               <StatusIndicator type="info">
-                No comments provided
+                {intl.formatMessage({ id: "lease.summary.noComments" })}
               </StatusIndicator>
             )}
           </Box>
