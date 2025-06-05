@@ -8,6 +8,10 @@ import { SUPPORTED_LOCALES } from '../../i18n/config';
 const languageNames = {
   en: 'English',
   fr: 'Français',
+  es: 'Español',
+  pt: 'Português',
+  it: 'Italiano',
+  de: 'Deutsch',
 } as const;
 
 export const LanguageSelector: React.FC = () => {

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { Input } from "@cloudscape-design/components";
+import { useTranslation } from "../../hooks/useTranslation";
 
 import styles from "./styles.module.scss";
 
@@ -20,6 +21,7 @@ export const NumberInput = ({
   isReadOnly,
   onChange,
 }: NumberInputProps) => {
+  const { t } = useTranslation();
   const handleChange = ({ detail }: { detail: { value: string } }) => {
     if (!onChange) return;
 
@@ -45,7 +47,7 @@ export const NumberInput = ({
     return (
       <div className={containerClassName}>
         <div className={styles.container}>
-          <div className={styles.left}>USD $</div>
+          <div className={styles.left}>{t("common.currency", "USD $")}</div>
           {inputElement}
         </div>
       </div>

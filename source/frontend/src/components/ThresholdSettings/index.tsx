@@ -8,6 +8,7 @@ import {
   Header,
   SpaceBetween,
 } from "@cloudscape-design/components";
+import { useTranslation } from "../../hooks/useTranslation";
 
 import {
   BudgetThreshold,
@@ -44,6 +45,7 @@ export const ThresholdSettings = ({
   thresholdType,
   meta: { error, submitFailed },
 }: ThresholdSettingsProps) => {
+  const { t } = useTranslation();
   const type = ThresholdTypes[thresholdType];
 
   // get max value from other form field
@@ -96,7 +98,7 @@ export const ThresholdSettings = ({
       </Header>
       {(() => {
         if (thresholds.length === 0 && !maxValue) {
-          return <Alert type="info">No thresholds created.</Alert>;
+          return <Alert type="info">{t("leaseTemplates.thresholds.empty", "No thresholds created.")}</Alert>;
         }
 
         return (
@@ -133,7 +135,7 @@ export const ThresholdSettings = ({
       })()}
 
       <Button iconName="add-plus" onClick={onAdd}>
-        Add a threshold
+        {t("leaseTemplates.thresholds.add", "Add a threshold")}
       </Button>
     </SpaceBetween>
   );

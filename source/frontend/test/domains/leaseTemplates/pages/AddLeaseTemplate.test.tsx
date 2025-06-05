@@ -6,6 +6,8 @@ import userEvent from "@testing-library/user-event";
 import { http, HttpResponse } from "msw";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
+import { I18nextProvider } from "react-i18next";
+import i18n from "@amzn/innovation-sandbox-frontend/i18n";
 
 import { showErrorToast } from "@amzn/innovation-sandbox-frontend/components/Toast";
 import { AddLeaseTemplate } from "@amzn/innovation-sandbox-frontend/domains/leaseTemplates/pages/AddLeaseTemplate";
@@ -30,35 +32,37 @@ vi.mock("@amzn/innovation-sandbox-frontend/components/Toast", () => ({
 describe("NewLeaseTemplate", () => {
   const renderComponent = () =>
     renderWithQueryClient(
-      <Router>
-        <AddLeaseTemplate />
-      </Router>,
+      <I18nextProvider i18n={i18n}>
+        <Router>
+          <AddLeaseTemplate />
+        </Router>
+      </I18nextProvider>,
     );
 
   const fillFormAndNavigate = async (
     user: ReturnType<typeof userEvent.setup>,
   ) => {
     await waitFor(() => {
-      expect(screen.getByLabelText("Name")).toBeInTheDocument();
+      expect(screen.getByLabelText(i18n.t("leaseTemplates.nameField"))).toBeInTheDocument();
     });
 
     // Fill out the Basic Details
-    await user.type(screen.getByLabelText("Name"), "Test Template");
-    await user.type(screen.getByLabelText("Description"), "Test Description");
-    await user.click(screen.getByLabelText("Approval required"));
+    await user.type(screen.getByLabelText(i18n.t("leaseTemplates.nameField")), "Test Template");
+    await user.type(screen.getByLabelText(i18n.t("leaseTemplates.descriptionField")), "Test Description");
+    await user.click(screen.getByLabelText(i18n.t("leaseTemplates.approvalRequired")));
 
     // Navigate to Budget step
     await user.click(screen.getByRole("button", { name: /next/i }));
 
     // Filling out Budget details
-    await user.type(screen.getByLabelText("Maximum Budget Amount"), "1000");
+    await user.type(screen.getByLabelText(i18n.t("leaseTemplates.budget.maxAmount")), "1000");
 
     // Navigate to Duration step
     await user.click(screen.getByRole("button", { name: /next/i }));
 
     // Filling out Duration details
     await user.type(
-      screen.getByLabelText("Maximum Lease Duration (in hours)"),
+      screen.getByLabelText(i18n.t("leaseTemplates.duration.maxHours")),
       "24",
     );
   };
@@ -67,17 +71,15 @@ describe("NewLeaseTemplate", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText("Add a New Lease Template")).toBeInTheDocument();
+      expect(screen.getByText(i18n.t("leaseTemplates.addNewTitle"))).toBeInTheDocument();
       expect(
-        screen.getByText(
-          "Give your users a new way to access a temporary AWS account.",
-        ),
+        screen.getByText(i18n.t("leaseTemplates.addNewDescription")),
       ).toBeInTheDocument();
     });
 
-    expect(screen.getByLabelText("Name")).toBeInTheDocument();
-    expect(screen.getByLabelText("Description")).toBeInTheDocument();
-    expect(screen.getByLabelText("Approval required")).toBeChecked();
+    expect(screen.getByLabelText(i18n.t("leaseTemplates.nameField"))).toBeInTheDocument();
+    expect(screen.getByLabelText(i18n.t("leaseTemplates.descriptionField"))).toBeInTheDocument();
+    expect(screen.getByLabelText(i18n.t("leaseTemplates.approvalRequired"))).toBeChecked();
   });
 
   test("navigates back to lease templates page on cancel", async () => {
@@ -85,7 +87,7 @@ describe("NewLeaseTemplate", () => {
     const user = userEvent.setup();
 
     const cancelButton = (
-      await screen.findAllByRole("button", { name: /cancel/i })
+      await screen.findAllByRole("button", { name: i18n.t("common.cancel") })
     )[0];
     await user.click(cancelButton);
 
@@ -106,7 +108,7 @@ describe("NewLeaseTemplate", () => {
 
     // Submit the form
     const submitButton = (
-      await screen.findAllByRole("button", { name: /submit/i })
+      await screen.findAllByRole("button", { name: i18n.t("common.submit") })
     )[0];
     await user.click(submitButton);
 
@@ -131,13 +133,13 @@ describe("NewLeaseTemplate", () => {
     await fillFormAndNavigate(user);
 
     // Submit the form
-    const submitButton = screen.getByRole("button", { name: /submit/i });
+    const submitButton = screen.getByRole("button", { name: i18n.t("common.submit") });
     await user.click(submitButton);
 
     await waitFor(() => {
       expect(showErrorToast).toHaveBeenCalledWith(
         "HTTP error 500",
-        "Whoops, something went wrong!",
+        i18n.t("error.form.submit"),
       );
     });
   });
