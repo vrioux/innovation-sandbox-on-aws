@@ -23,7 +23,15 @@ export const IntlProvider: React.FC<Props> = ({ children }) => {
   const [locale, setLocaleState] = useState<SupportedLocale>(() => {
     try {
       const savedLocale = localStorage.getItem('locale') as SupportedLocale;
-      return savedLocale && SUPPORTED_LOCALES.includes(savedLocale) ? savedLocale : getBrowserLocale();
+      const browserLocale = getBrowserLocale();
+      // First try the saved locale, then browser locale, then default
+      if (savedLocale && SUPPORTED_LOCALES.includes(savedLocale)) {
+        return savedLocale;
+      } else if (browserLocale && SUPPORTED_LOCALES.includes(browserLocale)) {
+        localStorage.setItem('locale', browserLocale);
+        return browserLocale;
+      }
+      return DEFAULT_LOCALE;
     } catch {
       return DEFAULT_LOCALE;
     }
@@ -41,7 +49,15 @@ export const IntlProvider: React.FC<Props> = ({ children }) => {
   }, []);
 
   const contextValue = useMemo(() => ({ locale, setLocale }), [locale, setLocale]);
-  const currentMessages = useMemo(() => messages[locale] || messages[DEFAULT_LOCALE], [locale]);
+  const currentMessages = useMemo(() => {
+    // Ensure we have messages for the current locale
+    const localeMessages = messages[locale];
+    if (!localeMessages) {
+      console.warn(`No messages found for locale ${locale}, falling back to ${DEFAULT_LOCALE}`);
+      return messages[DEFAULT_LOCALE];
+    }
+    return localeMessages;
+  }, [locale]);
 
   return (
     <LocaleContext.Provider value={contextValue}>

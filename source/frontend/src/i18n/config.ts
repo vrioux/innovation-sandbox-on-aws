@@ -6,8 +6,9 @@ import esMessages from './messages/es.json';
 import ptMessages from './messages/pt.json';
 import itMessages from './messages/it.json';
 import deMessages from './messages/de.json';
+import jpMessages from './messages/jp.json';
 
-export const SUPPORTED_LOCALES = ['en', 'fr', 'es', 'pt', 'it', 'de'] as const;
+export const SUPPORTED_LOCALES = ['en', 'fr', 'es', 'pt', 'it', 'de', 'jp'] as const;
 export type SupportedLocale = typeof SUPPORTED_LOCALES[number];
 
 export const DEFAULT_LOCALE: SupportedLocale = 'en';
@@ -19,6 +20,7 @@ export const messages = {
   pt: ptMessages,
   it: itMessages,
   de: deMessages,
+  jp: jpMessages,
 } as const;
 
 // This is optional but highly recommended since it prevents memory leaks
