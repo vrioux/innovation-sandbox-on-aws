@@ -50,7 +50,7 @@ export const BaseLayout = ({ children }: AppLayoutProps) => {
     }
 
     return [...userNavItems, ...commonNavItems];
-  }, [user?.roles]);
+  }, [user?.roles, t]);
 
   if (isLoggingOut) {
     return <FullPageLoader label={t("common.signingOut", "Signing out...")} />;

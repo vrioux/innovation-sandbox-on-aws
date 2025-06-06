@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { config } from "@amzn/innovation-sandbox-frontend/helpers/config";
-import { screen } from "@testing-library/react";
+import { screen, waitFor, fireEvent } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { BrowserRouter as Router } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
@@ -16,6 +16,7 @@ import { BaseLayout } from "@amzn/innovation-sandbox-frontend/components/AppLayo
 import { server } from "@amzn/innovation-sandbox-frontend/mocks/server";
 import { renderWithQueryClient } from "@amzn/innovation-sandbox-frontend/setupTests";
 import { ApiResponse } from "@amzn/innovation-sandbox-frontend/types";
+import { IntlProvider } from "@amzn/innovation-sandbox-frontend/i18n/IntlProvider";
 
 vi.mock("@amzn/innovation-sandbox-frontend/helpers/AuthService", () => ({
   AuthService: {
@@ -28,9 +29,11 @@ describe("BaseLayout", () => {
   const renderComponent = () =>
     renderWithQueryClient(
       <Router>
-        <BaseLayout>
-          <div data-testid="child-content">Child Content</div>
-        </BaseLayout>
+        <IntlProvider>
+          <BaseLayout>
+            <div data-testid="child-content">Child Content</div>
+          </BaseLayout>
+        </IntlProvider>
       </Router>,
     );
 
@@ -66,5 +69,30 @@ describe("BaseLayout", () => {
     renderComponent();
 
     expect(await screen.findByText("Maintenance Mode")).toBeInTheDocument();
+  });
+
+  test("navigation items update when language changes", async () => {
+    const { container } = renderComponent();
+    
+    // Wait for initial render with English text
+    await waitFor(() => {
+      expect(screen.getByText("Documentation")).toBeInTheDocument();
+      expect(screen.getByText("Home")).toBeInTheDocument();
+    });
+
+    // Get the language selector and change to French
+    const languageSelect = container.querySelector('select[aria-label="Select language"]');
+    expect(languageSelect).toBeInTheDocument();
+    
+    if (languageSelect) {
+      // Simulate language change to French
+      fireEvent.change(languageSelect, { target: { value: 'fr' } });
+
+      // Wait for navigation items to update with French text
+      await waitFor(() => {
+        expect(screen.getByText("Documentation")).toBeInTheDocument(); // "Documentation" is same in French
+        expect(screen.getByText("Accueil")).toBeInTheDocument(); // "Home" in French
+      });
+    }
   });
 });

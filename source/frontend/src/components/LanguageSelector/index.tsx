@@ -12,6 +12,7 @@ const languageNames = {
   pt: 'Português',
   it: 'Italiano',
   de: 'Deutsch',
+  jp: '日本語',
 } as const;
 
 export const LanguageSelector: React.FC = () => {
