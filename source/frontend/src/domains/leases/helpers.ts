@@ -98,7 +98,7 @@ export const generateBreadcrumb = (
   }
 
   breadcrumbItems.push({
-    text: lease.userEmail,
+    text: lease.owner.type === 'user' ? lease.owner.userEmail : `Team ${lease.owner.teamId}`,
     href: "#",
   });
 

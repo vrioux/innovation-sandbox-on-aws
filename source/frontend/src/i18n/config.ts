@@ -13,7 +13,11 @@ export type SupportedLocale = typeof SUPPORTED_LOCALES[number];
 
 export const DEFAULT_LOCALE: SupportedLocale = 'en';
 
-export const messages = {
+type Messages = {
+  [key in SupportedLocale]: typeof enMessages;
+};
+
+export const messages: Messages = {
   en: enMessages,
   fr: frMessages,
   es: esMessages,
@@ -21,7 +25,7 @@ export const messages = {
   it: itMessages,
   de: deMessages,
   jp: jpMessages,
-} as const;
+};
 
 // This is optional but highly recommended since it prevents memory leaks
 const cache = createIntlCache();

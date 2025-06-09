@@ -79,7 +79,7 @@ export const LeaseSummary = ({ lease }: { lease: Lease }) => {
           </Box>
           <Box>
             <FormField label={intl.formatMessage({ id: "lease.summary.requestedBy" })} />
-            <Box>{lease.userEmail}</Box>
+            <Box>{lease.owner.type === 'user' ? lease.owner.userEmail : `Team ${lease.owner.teamId}`}</Box>
           </Box>
           {isMonitoredOrExpired && (
             <Box>

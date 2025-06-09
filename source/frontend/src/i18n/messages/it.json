@@ -234,5 +234,6 @@
   "accounts.modal.cleanup.description": "{count} account da ripulire",
   "accounts.modal.cleanup.success": "Account inviato/i con successo per riprovare la pulizia",
   "accounts.modal.cleanup.error": "Uno o più account non sono stati ripuliti, prova a reinviare.",
-  "accounts.modal.cleanup.error.title": "Impossibile riprovare la pulizia dell'account/degli account"
+  "accounts.modal.cleanup.error.title": "Impossibile riprovare la pulizia dell'account/degli account",
+  "leaseTemplates.duration.maxHours": "Durata Massima (ore)"
 }

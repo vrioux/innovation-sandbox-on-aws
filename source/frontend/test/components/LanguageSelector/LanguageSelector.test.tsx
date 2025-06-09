@@ -25,9 +25,9 @@ describe('LanguageSelector', () => {
   });
 
   it('changes language when a new option is selected', () => {
-    const mockSetLocale = jest.fn();
+    const mockSetLocale = vi.fn();
     const mockUseLocale = () => ({ locale: 'en', setLocale: mockSetLocale });
-    jest.mock('../../../src/i18n/IntlProvider', () => ({
+    vi.mock('../../../src/i18n/IntlProvider', () => ({
       useLocale: mockUseLocale,
     }));
 

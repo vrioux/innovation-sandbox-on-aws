@@ -227,5 +227,6 @@
   "lease.template.pagination.page": "Page {pageNumber} of {totalPages}",
   "lease.template.noMatches.header": "No matching templates",
   "lease.template.noMatches.description": "No lease templates match your search term. Try a different search.",
-  "budget.noMaxBudget": "No max budget"
+  "budget.noMaxBudget": "No max budget",
+  "leaseTemplates.duration.maxHours": "Maximum Duration (hours)"
 }

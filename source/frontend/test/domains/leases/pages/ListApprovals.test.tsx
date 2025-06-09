@@ -63,10 +63,10 @@ describe("ListApprovals", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(mockPendingLeases[0].userEmail),
+        screen.getByText(mockPendingLeases[0].owner.type === 'user' ? mockPendingLeases[0].owner.userEmail : mockPendingLeases[0].owner.teamId),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(mockPendingLeases[1].userEmail),
+        screen.getByText(mockPendingLeases[1].owner.type === 'user' ? mockPendingLeases[1].owner.userEmail : mockPendingLeases[1].owner.teamId),
       ).toBeInTheDocument();
       expect(
         screen.getByText(mockPendingLeases[0].originalLeaseTemplateName),
@@ -99,7 +99,7 @@ describe("ListApprovals", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText(mockPendingLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId)).toBeInTheDocument();
     });
     const wrapper = createWrapper();
     const table = wrapper.findTable();
@@ -120,7 +120,7 @@ describe("ListApprovals", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText(mockPendingLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId)).toBeInTheDocument();
     });
 
     const wrapper = createWrapper();
@@ -147,7 +147,7 @@ describe("ListApprovals", () => {
 
     await waitFor(() =>
       expect(
-        modalContent.getByText(mockPendingLease.userEmail),
+        modalContent.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId),
       ).toBeInTheDocument(),
     );
   });
@@ -159,7 +159,7 @@ describe("ListApprovals", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText(mockPendingLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId)).toBeInTheDocument();
     });
 
     const wrapper = createWrapper();
@@ -186,7 +186,7 @@ describe("ListApprovals", () => {
 
     await waitFor(() =>
       expect(
-        modalContent.getByText(mockPendingLease.userEmail),
+        modalContent.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId),
       ).toBeInTheDocument(),
     );
   });

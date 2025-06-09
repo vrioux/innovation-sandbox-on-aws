@@ -67,7 +67,7 @@ export const budgetFields = (props?: BudgetFieldsProps) => {
         isCurrency: true,
         name: "maxSpend",
         showError: props?.alwaysShowValidationErrors,
-        label: <FormField label={t("leaseTemplates.budget.maxAmount", "Maximum Budget Amount")} />,
+        label: <FormField label={t("leaseTemplates.maxBudget", "Maximum Budget Amount")} />,
         validate: [
           validateNumber,
           (val: number) =>

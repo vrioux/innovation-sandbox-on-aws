@@ -54,7 +54,7 @@ describe("UpdateLease", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByRole("heading", { name: mockLease.userEmail }),
+        screen.getByRole("heading", { name: mockLease.owner.type === 'user' ? mockLease.owner.userEmail : mockLease.owner.teamId }),
       ).toBeInTheDocument();
       const summaryTab = screen.getByRole("tabpanel", { name: "Summary" });
       expect(within(summaryTab).getByText("Active")).toBeInTheDocument();

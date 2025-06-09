@@ -3,17 +3,17 @@ import { IntlProvider } from "react-intl";
 import { vi } from "vitest";
 
 import { LeaseDurationForm } from "@amzn/innovation-sandbox-frontend/domains/leases/components/LeaseDurationForm";
-import { messages } from "@amzn/innovation-sandbox-frontend/i18n/config";
+import { messages, SupportedLocale } from "@amzn/innovation-sandbox-frontend/i18n/config";
 
 describe("LeaseDurationForm", () => {
   const defaultProps = {
-    expirationDate: null,
-    durationThresholds: {},
+    expirationDate: undefined,
+    durationThresholds: [],
     onSubmit: vi.fn(),
     onCancel: vi.fn(),
   };
 
-  const renderWithIntl = (ui: React.ReactNode, locale = "en") => {
+  const renderWithIntl = (ui: React.ReactNode, locale: SupportedLocale = "en") => {
     return render(
       <IntlProvider messages={messages[locale]} locale={locale}>
         {ui}
@@ -42,7 +42,7 @@ describe("LeaseDurationForm", () => {
   it("shows different text when expiration date is set", () => {
     const props = {
       ...defaultProps,
-      expirationDate: new Date("2024-12-31T23:59:59"),
+      expirationDate: "2024-12-31T23:59:59Z",
     };
 
     renderWithIntl(<LeaseDurationForm {...props} />, "fr");

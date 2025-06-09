@@ -284,6 +284,8 @@
   "lease.template.pagination.page": "Page {pageNumber} sur {totalPages}",
   "lease.template.noMatches.header": "Aucun modèle correspondant",
   "lease.template.noMatches.description": "Aucun modèle de location ne correspond à votre terme de recherche. Essayez une recherche différente.",
+  "lease.template.noTemplates": "Aucun modèle de location configuré.",
+  "lease.template.contactAdmin": "Veuillez contacter votre administrateur système.",
   "budget.noMaxBudget": "Pas de budget maximum",
   "leaseTemplate.accountProvisionDescription": "Lorsqu'un utilisateur demande ce modèle de location, un compte lui sera automatiquement fourni si un compte est disponible dans le pool de comptes.",
   "leaseTemplate.addNewButton": "Ajouter un nouveau modèle de location",
@@ -310,5 +312,6 @@
   "common.email": "Email",
   "common.name": "Nom",
   "common.register": "S'inscrire",
-  "accounts.awsAccountId": "ID de compte AWS"
+  "accounts.awsAccountId": "ID de compte AWS",
+  "leaseTemplates.duration.maxHours": "Durée maximale (heures)"
 }

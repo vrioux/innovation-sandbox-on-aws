@@ -66,15 +66,15 @@ describe("MyLeases", () => {
   });
 
   test("renders leases with correct count and content", async () => {
-    const mockLease1 = createActiveLease({ userEmail: "test@example.com" });
+    const mockLease1 = createActiveLease({ owner: { type: 'user', userEmail: "test@example.com" } });
     const mockLease2 = createActiveLease({
-      userEmail: "test@example.com",
+      owner: { type: 'user', userEmail: "test@example.com" },
       status: "Frozen",
     });
     const mockLease3 = createPendingLease({
-      userEmail: "test@example.com",
+      owner: { type: 'user', userEmail: "test@example.com" },
     });
-    const mockLease4 = createActiveLease({ userEmail: "other@example.com" }); // This should not be included
+    const mockLease4 = createActiveLease({ owner: { type: 'user', userEmail: "other@example.com" } }); // This should not be included
     mockLeaseApi.returns([mockLease1, mockLease2, mockLease3, mockLease4]);
     server.use(mockLeaseApi.getHandler());
 
@@ -100,11 +100,11 @@ describe("MyLeases", () => {
 
   test("filters out leases that expired over 7 days ago", async () => {
     const mockLease1 = createExpiredLease({
-      userEmail: "test@example.com",
+      owner: { type: 'user', userEmail: "test@example.com" },
       endDate: moment().subtract(6, "days").toISOString(),
     });
     const mockLease2 = createExpiredLease({
-      userEmail: "test@example.com",
+      owner: { type: 'user', userEmail: "test@example.com" },
       endDate: moment().subtract(8, "days").toISOString(),
     });
     mockLeaseApi.returns([mockLease1, mockLease2]);
@@ -160,7 +160,7 @@ describe("MyLeases", () => {
   });
 
   test("calls refetch when refresh button is clicked", async () => {
-    const mockLease = createActiveLease({ userEmail: "test@example.com" });
+    const mockLease = createActiveLease({ owner: { type: 'user', userEmail: "test@example.com" } });
     mockLeaseApi.returns([mockLease]);
     server.use(mockLeaseApi.getHandler());
 

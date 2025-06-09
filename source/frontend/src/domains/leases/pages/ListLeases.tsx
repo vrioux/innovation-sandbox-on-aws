@@ -99,9 +99,9 @@ const UserCell = ({
   includeLinks: boolean;
 }) =>
   includeLinks ? (
-    <TextLink to={`/leases/edit/${lease.leaseId}`}>{lease.userEmail}</TextLink>
+    <TextLink to={`/leases/edit/${lease.leaseId}`}>{lease.owner.type === 'user' ? lease.owner.userEmail : `Team ${lease.owner.teamId}`}</TextLink>
   ) : (
-    lease.userEmail
+    lease.owner.type === 'user' ? lease.owner.userEmail : `Team ${lease.owner.teamId}`
   );
 
 const BudgetCell = ({ lease }: { lease: Lease }) => {

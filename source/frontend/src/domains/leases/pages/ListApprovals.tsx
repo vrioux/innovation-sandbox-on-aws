@@ -44,9 +44,9 @@ const RequestorCell = ({
   includeLinks: boolean;
 }) =>
   includeLinks ? (
-    <TextLink to={`/approvals/${lease.leaseId}`}>{lease.userEmail}</TextLink>
+    <TextLink to={`/approvals/${lease.leaseId}`}>{lease.owner.type === 'user' ? lease.owner.userEmail : `Team ${lease.owner.teamId}`}</TextLink>
   ) : (
-    lease.userEmail
+    lease.owner.type === 'user' ? lease.owner.userEmail : `Team ${lease.owner.teamId}`
   );
 
 // Review modal content component

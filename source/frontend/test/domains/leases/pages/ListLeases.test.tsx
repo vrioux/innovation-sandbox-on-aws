@@ -78,7 +78,10 @@ describe("ListLeases", () => {
     );
 
   const mockActiveLease = createActiveLease({
-    userEmail: "test@example.com",
+    owner: {
+      type: "user",
+      userEmail: "test@example.com"
+    },
     originalLeaseTemplateName: "Basic Template",
     status: "Active",
     awsAccountId: "123456789012",
@@ -87,13 +90,19 @@ describe("ListLeases", () => {
   });
 
   const mockPendingLease = createPendingLease({
-    userEmail: "pending@example.com",
+    owner: {
+      type: "user",
+      userEmail: "pending@example.com"
+    },
     originalLeaseTemplateName: "Advanced Template",
     status: "PendingApproval",
   });
 
   const mockExpiredLease = createExpiredLease({
-    userEmail: "expired@example.com",
+    owner: {
+      type: "user",
+      userEmail: "expired@example.com"
+    },
     originalLeaseTemplateName: "Expired Template",
     status: "Expired",
     awsAccountId: "210987654321",
@@ -128,7 +137,7 @@ describe("ListLeases", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText(mockActiveLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockActiveLease.owner.type === 'user' ? mockActiveLease.owner.userEmail : mockActiveLease.owner.teamId)).toBeInTheDocument();
       expect(
         screen.getByText(mockActiveLease.originalLeaseTemplateName),
       ).toBeInTheDocument();
@@ -138,10 +147,10 @@ describe("ListLeases", () => {
 
       // Ensure pending and expired leases are not initially displayed
       expect(
-        screen.queryByText(mockPendingLease.userEmail),
+        screen.queryByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByText(mockExpiredLease.userEmail),
+        screen.queryByText(mockExpiredLease.owner.type === 'user' ? mockExpiredLease.owner.userEmail : mockExpiredLease.owner.teamId),
       ).not.toBeInTheDocument();
     });
   });
@@ -199,12 +208,12 @@ describe("ListLeases", () => {
     if (pendingOption) await user.click(pendingOption);
 
     await waitFor(() => {
-      expect(screen.getByText(mockPendingLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId)).toBeInTheDocument();
       expect(
-        screen.queryByText(mockActiveLease.userEmail),
+        screen.queryByText(mockActiveLease.owner.type === 'user' ? mockActiveLease.owner.userEmail : mockActiveLease.owner.teamId),
       ).not.toBeInTheDocument();
       expect(
-        screen.queryByText(mockExpiredLease.userEmail),
+        screen.queryByText(mockExpiredLease.owner.type === 'user' ? mockExpiredLease.owner.userEmail : mockExpiredLease.owner.teamId),
       ).not.toBeInTheDocument();
     });
 
@@ -238,7 +247,7 @@ describe("ListLeases", () => {
     const user = userEvent.setup();
 
     await waitFor(() => {
-      expect(screen.getByText(mockActiveLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockActiveLease.owner.type === 'user' ? mockActiveLease.owner.userEmail : mockActiveLease.owner.teamId)).toBeInTheDocument();
     });
 
     const checkbox = screen.getAllByRole("checkbox")[1]; // First checkbox after "select all"
@@ -260,7 +269,7 @@ describe("ListLeases", () => {
     const user = userEvent.setup();
 
     await waitFor(() => {
-      expect(screen.getByText(mockActiveLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockActiveLease.owner.type === 'user' ? mockActiveLease.owner.userEmail : mockActiveLease.owner.teamId)).toBeInTheDocument();
     });
 
     const checkbox = screen.getAllByRole("checkbox")[1];
@@ -296,7 +305,7 @@ describe("ListLeases", () => {
     const user = userEvent.setup();
 
     await waitFor(() => {
-      expect(screen.getByText(mockActiveLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockActiveLease.owner.type === 'user' ? mockActiveLease.owner.userEmail : mockActiveLease.owner.teamId)).toBeInTheDocument();
     });
 
     const checkbox = screen.getAllByRole("checkbox")[1];
@@ -347,9 +356,9 @@ describe("ListLeases", () => {
     const user = userEvent.setup();
 
     await waitFor(() => {
-      expect(screen.getByText(mockActiveLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockActiveLease.owner.type === 'user' ? mockActiveLease.owner.userEmail : mockActiveLease.owner.teamId)).toBeInTheDocument();
       expect(
-        screen.queryByText(mockPendingLease.userEmail),
+        screen.queryByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId),
       ).not.toBeInTheDocument();
     });
 
@@ -365,10 +374,10 @@ describe("ListLeases", () => {
     await user.click(refreshButton!.getElement());
 
     await waitFor(() => {
-      expect(screen.getByText(mockActiveLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockActiveLease.owner.type === 'user' ? mockActiveLease.owner.userEmail : mockActiveLease.owner.teamId)).toBeInTheDocument();
       // The pending lease should still not be visible after refresh
       expect(
-        screen.queryByText(mockPendingLease.userEmail),
+        screen.queryByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId),
       ).not.toBeInTheDocument();
     });
   });
@@ -377,7 +386,10 @@ describe("ListLeases", () => {
     const mockLease = createActiveLease({
       totalCostAccrued: 500,
       maxSpend: 1000,
-      userEmail: "test@example.com",
+      owner: {
+        type: "user",
+        userEmail: "test@example.com"
+      },
       originalLeaseTemplateName: "Test Template",
     });
     mockLeaseApi.returns([mockLease]);
@@ -386,7 +398,7 @@ describe("ListLeases", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText(mockLease.userEmail)).toBeInTheDocument();
+      expect(screen.getByText(mockLease.owner.type === 'user' ? mockLease.owner.userEmail : mockLease.owner.teamId)).toBeInTheDocument();
     });
 
     // Find the mocked BudgetProgressBar
