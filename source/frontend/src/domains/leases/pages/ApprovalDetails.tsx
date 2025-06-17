@@ -89,7 +89,7 @@ export const ApprovalDetails = () => {
             </SpaceBetween>
           }
         >
-          {lease.owner.type === 'user' ? lease.owner.userEmail : `Team ${lease.owner.teamId}`}
+          {lease.userEmail}
         </Header>
       }
     >
