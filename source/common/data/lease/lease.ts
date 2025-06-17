@@ -45,19 +45,8 @@ export const AllLeaseStatusSchema = z.enum([
   ...ExpiredLeaseStatusSchema.options,
 ]);
 
-export const LeaseOwnerSchema = z.union([
-  z.object({
-    type: z.literal('user'),
-    userEmail: z.string().email(),
-  }),
-  z.object({
-    type: z.literal('team'),
-    teamId: z.string().uuid(),
-  }),
-]);
-
 export const LeaseKeySchema = z.object({
-  owner: LeaseOwnerSchema,
+  userEmail: z.string().email(),
   uuid: z.string().uuid(),
 });
 
@@ -133,15 +122,6 @@ export type ExpiredLease = z.infer<typeof ExpiredLeaseSchema>;
 export type LeaseWithLeaseId = Lease & { leaseId: string };
 
 export type LeaseKey = z.infer<typeof LeaseKeySchema>;
-export type LeaseOwner = z.infer<typeof LeaseOwnerSchema>;
-
-export function isUserLease(owner: LeaseOwner): owner is { type: 'user'; userEmail: string } {
-  return owner.type === 'user';
-}
-
-export function isTeamLease(owner: LeaseOwner): owner is { type: 'team'; teamId: string } {
-  return owner.type === 'team';
-}
 
 export function isPendingLease(lease: Lease): lease is PendingLease {
   return PendingLeaseStatusSchema.safeParse(lease.status).success;
