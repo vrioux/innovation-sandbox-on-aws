@@ -6,7 +6,6 @@ import { screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { BrowserRouter } from "react-router-dom";
 import { describe, expect, test, vi } from "vitest";
-import { IntlProvider } from "react-intl";
 
 import { ListApprovals } from "@amzn/innovation-sandbox-frontend/domains/leases/pages/ListApprovals";
 import { ModalProvider } from "@amzn/innovation-sandbox-frontend/hooks/useModal";
@@ -14,7 +13,6 @@ import { createPendingLease } from "@amzn/innovation-sandbox-frontend/mocks/fact
 import { mockLeaseApi } from "@amzn/innovation-sandbox-frontend/mocks/mockApi";
 import { server } from "@amzn/innovation-sandbox-frontend/mocks/server";
 import { renderWithQueryClient } from "@amzn/innovation-sandbox-frontend/setupTests";
-import { messages } from "@amzn/innovation-sandbox-frontend/i18n/config";
 
 // Mock ResizeObserver
 global.ResizeObserver = vi.fn().mockImplementation(() => ({
@@ -31,13 +29,11 @@ vi.mock("@amzn/innovation-sandbox-frontend/hooks/useBreadcrumb", () => ({
 describe("ListApprovals", () => {
   const renderComponent = () =>
     renderWithQueryClient(
-      <IntlProvider messages={messages.en} locale="en" defaultLocale="en">
-        <ModalProvider>
-          <BrowserRouter>
-            <ListApprovals />
-          </BrowserRouter>
-        </ModalProvider>
-      </IntlProvider>,
+      <ModalProvider>
+        <BrowserRouter>
+          <ListApprovals />
+        </BrowserRouter>
+      </ModalProvider>,
     );
 
   const mockPendingLease = createPendingLease();
@@ -47,10 +43,10 @@ describe("ListApprovals", () => {
     const wrapper = createWrapper();
     const header = wrapper.findHeader();
     expect(header?.findHeadingText()?.getElement()).toHaveTextContent(
-      messages.en["approvals.title"],
+      "Approvals",
     );
     expect(header?.findDescription()?.getElement()).toHaveTextContent(
-      messages.en["approvals.description"],
+      "Manage requests to lease sandbox accounts",
     );
   });
 
@@ -63,10 +59,10 @@ describe("ListApprovals", () => {
 
     await waitFor(() => {
       expect(
-        screen.getByText(mockPendingLeases[0].owner.type === 'user' ? mockPendingLeases[0].owner.userEmail : mockPendingLeases[0].owner.teamId),
+        screen.getByText(mockPendingLeases[0].userEmail),
       ).toBeInTheDocument();
       expect(
-        screen.getByText(mockPendingLeases[1].owner.type === 'user' ? mockPendingLeases[1].owner.userEmail : mockPendingLeases[1].owner.teamId),
+        screen.getByText(mockPendingLeases[1].userEmail),
       ).toBeInTheDocument();
       expect(
         screen.getByText(mockPendingLeases[0].originalLeaseTemplateName),
@@ -87,7 +83,7 @@ describe("ListApprovals", () => {
       const wrapper = createWrapper();
       const table = wrapper.findTable();
       expect(table?.findEmptySlot()?.getElement()).toHaveTextContent(
-        messages.en["approvals.noPending"],
+        "No items to display",
       );
     });
   });
@@ -99,7 +95,7 @@ describe("ListApprovals", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId)).toBeInTheDocument();
+      expect(screen.getByText(mockPendingLease.userEmail)).toBeInTheDocument();
     });
     const wrapper = createWrapper();
     const table = wrapper.findTable();
@@ -120,7 +116,7 @@ describe("ListApprovals", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId)).toBeInTheDocument();
+      expect(screen.getByText(mockPendingLease.userEmail)).toBeInTheDocument();
     });
 
     const wrapper = createWrapper();
@@ -133,7 +129,7 @@ describe("ListApprovals", () => {
     const actionButton = wrapper.findButtonDropdown();
     await userEvent.click(actionButton!.findNativeButton().getElement());
 
-    const approveButton = screen.getByText(messages.en["approvals.actions.approve"]);
+    const approveButton = screen.getByText("Approve request(s)");
     await userEvent.click(approveButton);
 
     const modal = screen.getByRole("dialog");
@@ -143,11 +139,11 @@ describe("ListApprovals", () => {
 
     const modalContent = within(modal);
 
-    expect(modalContent.getByText(messages.en["approvals.modal.approve"])).toBeInTheDocument();
+    expect(modalContent.getByText("Approve request(s)")).toBeInTheDocument();
 
     await waitFor(() =>
       expect(
-        modalContent.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId),
+        modalContent.getByText(mockPendingLease.userEmail),
       ).toBeInTheDocument(),
     );
   });
@@ -159,7 +155,7 @@ describe("ListApprovals", () => {
     renderComponent();
 
     await waitFor(() => {
-      expect(screen.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId)).toBeInTheDocument();
+      expect(screen.getByText(mockPendingLease.userEmail)).toBeInTheDocument();
     });
 
     const wrapper = createWrapper();
@@ -172,8 +168,8 @@ describe("ListApprovals", () => {
     const actionButton = wrapper.findButtonDropdown();
     await userEvent.click(actionButton!.findNativeButton().getElement());
 
-    const denyButton = screen.getByText(messages.en["approvals.actions.deny"]);
-    await userEvent.click(denyButton);
+    const approveButton = screen.getByText("Deny request(s)");
+    await userEvent.click(approveButton);
 
     const modal = screen.getByRole("dialog");
     await waitFor(() => {
@@ -182,11 +178,11 @@ describe("ListApprovals", () => {
 
     const modalContent = within(modal);
 
-    expect(modalContent.getByText(messages.en["approvals.modal.deny"])).toBeInTheDocument();
+    expect(modalContent.getByText("Deny request(s)")).toBeInTheDocument();
 
     await waitFor(() =>
       expect(
-        modalContent.getByText(mockPendingLease.owner.type === 'user' ? mockPendingLease.owner.userEmail : mockPendingLease.owner.teamId),
+        modalContent.getByText(mockPendingLease.userEmail),
       ).toBeInTheDocument(),
     );
   });
