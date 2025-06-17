@@ -14,12 +14,12 @@
     "env:init": "cp .env.example .env",
     "set-env": "echo done",
     "bootstrap": "npm run set-env && npm run --workspace @amzn/innovation-sandbox-frontend build && npm run --workspace @amzn/innovation-sandbox-infrastructure cdk bootstrap",
-    "docker:build": "npm run set-env && docker build --platform linux/amd64 -t $HUB_ACCOUNT_ID.dkr.ecr.$PRIVATE_ECR_REPO_REGION.amazonaws.com/$PRIVATE_ECR_REPO:latest ./source/infrastructure/lib/components/account-cleaner",
+    "docker:build": "dotenv && docker build --platform linux/amd64 -t $HUB_ACCOUNT_ID.dkr.ecr.$PRIVATE_ECR_REPO_REGION.amazonaws.com/$PRIVATE_ECR_REPO:latest ./source/infrastructure/lib/components/account-cleaner",
     "docker:login": "npm run set-env && aws ecr get-login-password | docker login --username AWS --password-stdin $HUB_ACCOUNT_ID.dkr.ecr.$PRIVATE_ECR_REPO_REGION.amazonaws.com",
     "docker:push": "npm run set-env && docker push $HUB_ACCOUNT_ID.dkr.ecr.$PRIVATE_ECR_REPO_REGION.amazonaws.com/$PRIVATE_ECR_REPO:latest",
     "docker:build-and-push": "npm run docker:build && npm run docker:login && npm run docker:push",
     "deploy:all": "npm run set-env && npm run deploy:account-pool && npm run deploy:idc && npm run deploy:data && npm run deploy:compute",
-    "deploy:account-pool": "npm run set-env && npm run --workspace @amzn/innovation-sandbox-infrastructure cdk synth && npm run --workspace @amzn/innovation-sandbox-infrastructure cdk deploy -- InnovationSandbox-AccountPool --require-approval=never --parameters ParentOuId=$PARENT_OU_ID --parameters HubAccountId=$HUB_ACCOUNT_ID --context deploymentMode=$DEPLOYMENT_MODE  --parameters IsbManagedRegions=$AWS_REGIONS",
+    "deploy:account-pool": "dotenv && npm run --workspace @amzn/innovation-sandbox-infrastructure cdk synth && npm run --workspace @amzn/innovation-sandbox-infrastructure cdk deploy -- InnovationSandbox-AccountPool --require-approval=never --parameters ParentOuId=$PARENT_OU_ID --parameters HubAccountId=$HUB_ACCOUNT_ID --context deploymentMode=$DEPLOYMENT_MODE  --parameters IsbManagedRegions=$AWS_REGIONS",
     "deploy:idc": "npm run set-env && npm run --workspace @amzn/innovation-sandbox-infrastructure cdk deploy -- InnovationSandbox-IDC --require-approval=never --parameters IdentityStoreId=$IDENTITY_STORE_ID --parameters SsoInstanceArn=$SSO_INSTANCE_ARN --parameters HubAccountId=$HUB_ACCOUNT_ID",
     "deploy:data": "npm run set-env && npm run --workspace @amzn/innovation-sandbox-infrastructure cdk deploy -- InnovationSandbox-Data --require-approval=never --context deploymentMode=$DEPLOYMENT_MODE --context nukeConfigFilePath=$NUKE_CONFIG_FILE_PATH",
     "deploy:compute": "npm run set-env && npm run --workspace @amzn/innovation-sandbox-frontend build && npm run --workspace @amzn/innovation-sandbox-infrastructure cdk deploy -- InnovationSandbox-Compute --require-approval=never --parameters OrgMgtAccountId=$ORG_MGT_ACCOUNT_ID --parameters IdcAccountId=$IDC_ACCOUNT_ID --parameters AcceptSolutionTermsOfUse=$ACCEPT_SOLUTION_TERMS_OF_USE --context deploymentMode=$DEPLOYMENT_MODE --context privateEcrRepo=$PRIVATE_ECR_REPO",
@@ -40,10 +40,6 @@
     "source/e2e"
   ],
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.1.5",
-    "@testing-library/react": "^14.1.2",
-    "@testing-library/user-event": "^14.5.1",
-    "@types/testing-library__jest-dom": "^5.14.9",
     "@anatine/zod-mock": "^3.13.4",
     "@aws-sdk/client-accessanalyzer": "^3.687.0",
     "@aws-sdk/client-cloudcontrol": "^3.692.0",
@@ -52,6 +48,9 @@
     "@aws-sdk/client-scheduler": "^3.758.0",
     "@aws-sdk/client-sfn": "^3.687.0",
     "@aws-sdk/credential-providers": "^3.693.0",
+    "@testing-library/jest-dom": "^6.1.5",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
     "@trivago/prettier-plugin-sort-imports": "^4.3.0",
     "@types/aws-lambda": "^8.10.145",
     "@types/cookie-parser": "^1.4.7",
@@ -62,6 +61,7 @@
     "@types/luxon": "^3.4.2",
     "@types/object-hash": "^3.0.6",
     "@types/supertest": "^6.0.2",
+    "@types/testing-library__jest-dom": "^5.14.9",
     "@vitest/coverage-v8": "^3.1.1",
     "aws-sdk-client-mock": "^4.0.2",
     "fs-extra": "^11.2.0",
@@ -92,5 +92,8 @@
       "classProperties",
       "[\"decorators\", { \"decoratorsBeforeExport\": true }]"
     ]
+  },
+  "dependencies": {
+    "dotenv-cli": "^8.0.0"
   }
 }
