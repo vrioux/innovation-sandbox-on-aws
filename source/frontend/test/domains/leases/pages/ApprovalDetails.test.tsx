@@ -51,7 +51,7 @@ describe("ApprovalDetails", () => {
 
     await waitFor(() => {
       expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-        mockLease.owner.type === 'user' ? mockLease.owner.userEmail : mockLease.owner.teamId,
+        mockLease.userEmail,
       );
       expect(
         screen.getByText(mockLease.originalLeaseTemplateName, {
