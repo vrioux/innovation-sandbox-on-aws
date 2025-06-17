@@ -54,7 +54,7 @@ describe("Home", () => {
     renderWithQueryClient(
       <Router>
         <IntlProvider messages={messages.en} locale="en" defaultLocale="en">
-          <Home />
+        <Home />
         </IntlProvider>
       </Router>,
     );
@@ -92,12 +92,12 @@ describe("Home", () => {
   test("displays lease data when available", async () => {
     const mockLease1 = createActiveLease({
       originalLeaseTemplateName: "Lease 1",
-      owner: { type: 'user', userEmail: "test@example.com" },
+      userEmail: "test@example.com",
       awsAccountId: "123456789011",
     });
     const mockLease2 = createActiveLease({
       originalLeaseTemplateName: "Lease 2",
-      owner: { type: 'user', userEmail: "test@example.com" },
+      userEmail: "test@example.com",
       awsAccountId: "123456789012",
     });
     mockLeaseApi.returns([mockLease1, mockLease2]);
@@ -117,7 +117,7 @@ describe("Home", () => {
   test("refreshes lease data when refresh button is clicked", async () => {
     const user = userEvent.setup();
     const mockLease = createActiveLease({
-      owner: { type: 'user', userEmail: "test@example.com" },
+      userEmail: "test@example.com",
       originalLeaseTemplateName: "Test Lease Template",
       awsAccountId: "123456789012",
     });
