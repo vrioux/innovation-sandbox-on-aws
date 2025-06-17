@@ -60,34 +60,34 @@ import { useAppLayoutContext } from "@aws-northstar/ui/components/AppLayout";
 
 const useFilterOptions = () => {
   const intl = useIntl();
-  const filterOptions: SelectProps.Options = [
-    {
+const filterOptions: SelectProps.Options = [
+  {
       label: intl.formatMessage({ id: "status.active", defaultMessage: "Active" }),
-      options: MonitoredLeaseStatusSchema.options.map((status) => ({
+    options: MonitoredLeaseStatusSchema.options.map((status) => ({
         label: intl.formatMessage({ id: `status.${status.toLowerCase()}`, defaultMessage: getLeaseStatusDisplayName(status as LeaseStatus) }),
-        value: status,
-      })),
-    },
-    {
+      value: status,
+    })),
+  },
+  {
       label: intl.formatMessage({ id: "status.pending", defaultMessage: "Pending" }),
-      options: [
-        {
+    options: [
+      {
           label: intl.formatMessage({ id: `status.${PendingLeaseStatusSchema.value.toLowerCase()}`, defaultMessage: getLeaseStatusDisplayName(PendingLeaseStatusSchema.value) }),
-          value: PendingLeaseStatusSchema.value,
-        },
-      ],
-    },
-    {
+        value: PendingLeaseStatusSchema.value,
+      },
+    ],
+  },
+  {
       label: intl.formatMessage({ id: "status.expired", defaultMessage: "Expired" }),
-      options: [
-        ...ExpiredLeaseStatusSchema.options,
-        ApprovalDeniedLeaseStatusSchema.value,
-      ].map((status) => ({
+    options: [
+      ...ExpiredLeaseStatusSchema.options,
+      ApprovalDeniedLeaseStatusSchema.value,
+    ].map((status) => ({
         label: intl.formatMessage({ id: `status.${status.toLowerCase()}`, defaultMessage: getLeaseStatusDisplayName(status as LeaseStatus) }),
-        value: status,
-      })),
-    },
-  ];
+      value: status,
+    })),
+  },
+];
   return filterOptions;
 };
 
@@ -99,9 +99,9 @@ const UserCell = ({
   includeLinks: boolean;
 }) =>
   includeLinks ? (
-    <TextLink to={`/leases/edit/${lease.leaseId}`}>{lease.owner.type === 'user' ? lease.owner.userEmail : `Team ${lease.owner.teamId}`}</TextLink>
+    <TextLink to={`/leases/edit/${lease.leaseId}`}>{lease.userEmail}</TextLink>
   ) : (
-    lease.owner.type === 'user' ? lease.owner.userEmail : `Team ${lease.owner.teamId}`
+    lease.userEmail
   );
 
 const BudgetCell = ({ lease }: { lease: Lease }) => {
