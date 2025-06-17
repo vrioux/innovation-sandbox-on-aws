@@ -169,7 +169,7 @@ export const UpdateLease = () => {
           variant="h1"
           description={<>{lease?.originalLeaseTemplateName}</>}
         >
-          {lease.owner.type === 'user' ? lease.owner.userEmail : `Team ${lease.owner.teamId}`}
+          {lease.userEmail}
         </Header>
       }
     >
