@@ -14,13 +14,7 @@ import {
 import { generateSchemaData } from "@amzn/innovation-sandbox-commons/test/generate-schema-data";
 
 export function createLease(overrides?: Partial<Lease>): Lease {
-  return generateSchemaData(LeaseSchema, {
-    owner: {
-      type: 'user',
-      userEmail: 'test@example.com'
-    },
-    ...overrides,
-  });
+  return generateSchemaData(LeaseSchema, overrides);
 }
 
 export function createActiveLease(
