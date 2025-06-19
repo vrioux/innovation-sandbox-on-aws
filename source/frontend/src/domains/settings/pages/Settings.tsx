@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { ContentLayout, Header, Tabs } from "@cloudscape-design/components";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useTranslation } from "@amzn/innovation-sandbox-frontend/hooks/useTranslation";
 
 import { InfoLink } from "@amzn/innovation-sandbox-frontend/components/InfoLink";
 import { Markdown } from "@amzn/innovation-sandbox-frontend/components/Markdown";
@@ -16,12 +16,12 @@ import { useAppLayoutContext } from "@aws-northstar/ui/components/AppLayout";
 export const Settings = () => {
   const setBreadcrumb = useBreadcrumb();
   const { setTools } = useAppLayoutContext();
-  const intl = useIntl();
+  const { t } = useTranslation();
 
   useInit(() => {
     setBreadcrumb([
-      { text: intl.formatMessage({ id: "common.home" }), href: "/" },
-      { text: intl.formatMessage({ id: "settings.title" }), href: "/settings" },
+      { text: t("common.home"), href: "/" },
+      { text: t("settings.title"), href: "/settings" },
     ]);
     setTools(<Markdown file="settings" />);
   });
@@ -32,26 +32,26 @@ export const Settings = () => {
         <Header
           variant="h1"
           info={<InfoLink markdown="settings" />}
-          description={<FormattedMessage id="settings.description" />}
+          description={t("settings.description")}
         >
-          <FormattedMessage id="settings.title" />
+          {t("settings.title")}
         </Header>
       }
     >
       <Tabs
         tabs={[
           {
-            label: intl.formatMessage({ id: "settings.general" }),
+            label: t("settings.general"),
             id: "general",
             content: <GeneralSettings />,
           },
           {
-            label: intl.formatMessage({ id: "settings.lease" }),
+            label: t("settings.lease"),
             id: "lease",
             content: <LeaseSettings />,
           },
           {
-            label: intl.formatMessage({ id: "settings.cleanup" }),
+            label: t("settings.cleanup"),
             id: "clean",
             content: <CleanupSettings />,
           },

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { KeyValuePairs } from "@cloudscape-design/components";
-import { FormattedMessage, useIntl } from "react-intl";
+import { useTranslation } from "@amzn/innovation-sandbox-frontend/hooks/useTranslation";
 
 import { ErrorPanel } from "@amzn/innovation-sandbox-frontend/components/ErrorPanel";
 import { Loader } from "@amzn/innovation-sandbox-frontend/components/Loader";
@@ -17,7 +17,7 @@ export const LeaseSettings = () => {
     refetch,
     error,
   } = useGetConfigurations();
-  const intl = useIntl();
+  const { t } = useTranslation();
 
   if (isLoading) {
     return <Loader />;
@@ -26,7 +26,7 @@ export const LeaseSettings = () => {
   if (loadingError || !config) {
     return (
       <ErrorPanel
-        description={intl.formatMessage({ id: "error.loadingSettings" })}
+        description={t("error.loadingSettings")}
         retry={refetch}
         error={error as Error}
       />
@@ -40,44 +40,38 @@ export const LeaseSettings = () => {
         items={[
           {
             type: "group",
-            title: intl.formatMessage({ id: "settings.budget.title" }),
+            title: t("settings.budget.title"),
             items: [
               {
-                label: <FormattedMessage id="settings.budget.maxBudget" />,
-                value: <FormattedMessage 
-                  id="settings.budget.maxBudgetValue" 
-                  values={{ amount: config.leases.maxBudget }} 
-                />,
+                label: t("settings.budget.maxBudget"),
+                value: t("settings.budget.maxBudgetValue", undefined, { amount: config.leases.maxBudget }),
               },
               {
-                label: <FormattedMessage id="settings.budget.requireMax" />,
+                label: t("settings.budget.requireMax"),
                 value: config.leases.requireMaxBudget.toString(),
               },
             ],
           },
           {
             type: "group",
-            title: intl.formatMessage({ id: "settings.duration.title" }),
+            title: t("settings.duration.title"),
             items: [
               {
-                label: <FormattedMessage id="settings.duration.maxLease" />,
-                value: <FormattedMessage 
-                  id="settings.duration.maxLeaseValue" 
-                  values={{ hours: config.leases.maxDurationHours }} 
-                />,
+                label: t("settings.duration.maxLease"),
+                value: t("settings.duration.maxLeaseValue", undefined, { hours: config.leases.maxDurationHours }),
               },
               {
-                label: <FormattedMessage id="settings.duration.requireMax" />,
+                label: t("settings.duration.requireMax"),
                 value: config.leases.requireMaxDuration.toString(),
               },
             ],
           },
           {
             type: "group",
-            title: intl.formatMessage({ id: "settings.userLimits.title" }),
+            title: t("settings.userLimits.title"),
             items: [
               {
-                label: <FormattedMessage id="settings.userLimits.maxLeases" />,
+                label: t("settings.userLimits.maxLeases"),
                 value: config.leases.maxLeasesPerUser,
               },
             ],
