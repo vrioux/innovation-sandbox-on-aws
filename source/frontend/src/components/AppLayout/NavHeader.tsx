@@ -118,6 +118,12 @@ export const NavHeader: FC<NavHeaderProps> = ({
                 iconName: locale === "de" ? "check" : undefined,
                 iconSvg: locale !== "de" ? spacerSvg : undefined,
               },
+              {
+                id: "language.jp",
+                text: t("settings.language.jp", "日本語"),
+                iconName: locale === "jp" ? "check" : undefined,
+                iconSvg: locale !== "jp" ? spacerSvg : undefined,
+              },
             ],
           },
         ],
@@ -152,6 +158,9 @@ export const NavHeader: FC<NavHeaderProps> = ({
               break;
             case "language.de":
               setLocale("de");
+              break;
+            case "language.jp":
+              setLocale("jp");
               break;
             default:
               break;
