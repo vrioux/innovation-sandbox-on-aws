@@ -13,8 +13,11 @@ export type SupportedLocale = typeof SUPPORTED_LOCALES[number];
 
 export const DEFAULT_LOCALE: SupportedLocale = 'en';
 
+// Use Record<string, string> to allow different keys in different language files
+type MessageDictionary = Record<string, string>;
+
 type Messages = {
-  [key in SupportedLocale]: typeof enMessages;
+  [key in SupportedLocale]: MessageDictionary;
 };
 
 export const messages: Messages = {
